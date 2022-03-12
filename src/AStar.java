@@ -29,6 +29,10 @@ public class AStar extends Search {
         LinkedList<Position> shortestWay;
 
         while (!this.hp.exitLibrary) {
+            if (step == 27) {
+                int breakpoint = 0;
+            }
+
             step++;
             this.restartCalculations();
             this.restartRoadMap();
@@ -140,7 +144,7 @@ public class AStar extends Search {
     }
 
     private Position doStep() {
-        return this.findOptimalStep(0, 8, 0, 8);
+        return this.findOptimalStep(0, 9, 0, 9);
     }
 
     private Position findOptimalStep(int i0, int iMax, int j0, int jMax) {
