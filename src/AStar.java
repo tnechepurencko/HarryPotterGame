@@ -42,6 +42,10 @@ public class AStar extends Search {
                     this.hp.exitLibrary = true;
                     System.out.println("YOU WON");
                 } else {
+                    this.aStarCalculations[this.hp.position.x][this.hp.position.y][0] = 0;
+                    this.aStarCalculations[this.hp.position.x][this.hp.position.y][1] =
+                            Math.abs(field.exit.x - this.hp.position.x) + Math.abs(field.exit.y - this.hp.position.y);
+
                     shortestWay = new LinkedList<>();
                     boolean exitFound = false;
                     this.updateCalculations(this.hp.position, field.exit);
@@ -158,20 +162,12 @@ public class AStar extends Search {
     }
 
     private Position findPartOfShortestWay(Position position) {
-        return this.findOptimalWay(position.x - 1, position.x + 2, position.y - 1, position.y + 2);
-    }
-
-    private Position doStep() {
-        return this.findOptimalStep(0, 9, 0, 9);
-    }
-
-    private Position findOptimalWay(int i0, int iMax, int j0, int jMax) {
         int minSum = 10000;
         int minGain = 10000;
         int x = -1, y = -1;
 
-        for (int i = i0; i < iMax; i++) {
-            for (int j = j0; j < jMax; j++) {
+        for (int i = position.x - 1; i < position.x + 2; i++) {
+            for (int j = position.y - 1; j < position.y + 2; j++) {
                 if (i > -1 && i < 9 && j > -1 && j < 9 && this.roadMap[i][j] == 0) {
                     if (this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1] < minSum) {
                         minSum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1];
@@ -190,14 +186,14 @@ public class AStar extends Search {
         return new Position(x, y);
     }
 
-    private Position findOptimalStep(int i0, int iMax, int j0, int jMax) {
+    private Position doStep() {
         int minSum = 10000;
         int minHeuristics = 10000;
         int x = -1, y = -1;
 
-        for (int i = i0; i < iMax; i++) {
-            for (int j = j0; j < jMax; j++) {
-                if (i > -1 && i < 9 && j > -1 && j < 9 && this.roadMap[i][j] == 0) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (this.roadMap[i][j] == 0) {
                     if (this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1] < minSum) {
                         minSum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1];
                         minHeuristics = this.aStarCalculations[i][j][1];
