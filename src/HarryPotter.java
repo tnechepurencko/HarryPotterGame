@@ -6,7 +6,7 @@ public class HarryPotter extends Person {
     boolean filchFound;
     boolean hasBook;
     boolean hasCloak;
-    boolean exitLibrary;
+    boolean endgame;
 
     public HarryPotter(int scenario, Position position) {
         super(position, "H");
@@ -14,7 +14,7 @@ public class HarryPotter extends Person {
         this.filchFound = false;
         this.hasBook = false;
         this.hasCloak = false;
-        this.exitLibrary = false;
+        this.endgame = false;
 
         this.scenario = scenario;
         this.generateMemory();
@@ -24,10 +24,10 @@ public class HarryPotter extends Person {
      * The method initializes "memory" and fills it with "·" symbol.
      */
     void generateMemory() {
-        memory = new String[9][9];
+        this.memory = new String[9][9];
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                memory[i][j] = "·";
+                this.memory[i][j] = "·";
             }
         }
     }
@@ -42,39 +42,6 @@ public class HarryPotter extends Person {
         updateMemory(field);
     }
 
-//    boolean canAccessCloak(Field field) {
-//        if (filchFound && norrisFound) {
-//            if (Math.abs(field.mrFilch.position.y - field.mrsNorris.position.y) < 5 &&
-//                    Math.abs(field.mrFilch.position.x - field.mrsNorris.position.x) < 5 &&
-//                    Math.abs(field.mrFilch.position.y - field.mrsNorris.position.y) > 1 &&
-//                    Math.abs(field.mrFilch.position.x - field.mrsNorris.position.x) > 1) {
-//                if (!(field.mrFilch.position.y > 2 && field.mrFilch.position.y < 6 &&
-//                        field.mrFilch.position.x > 2 && field.mrFilch.position.x < 6) &&
-//                        !(field.mrsNorris.position.y > 1 && field.mrsNorris.position.y < 7 &&
-//                        field.mrsNorris.position.x > 1 && field.mrsNorris.position.x < 7)) {
-//                    if (!())
-//                }
-//            }
-//        }
-//    }
-
-
-//    /**
-//     * @return -1: no closed zone, 1: upper left, 2: upper right, 3: downer left, 4: downer right
-//     */
-//    int closedZone(for (int i = 0; i < 5; i++) {
-//        for (int j = 0; j < 3; j++) {
-//            if (this.memory[i][j])
-//        }
-//    }) {
-//
-//    }
-//
-//    boolean enemiesNear(Position position) {
-//        if (this.memory[position.x][position.y].compareTo(""))
-//    }
-
-
     /**
      * The method checks if Harry can determine location of Norris.
      * @param field: current field
@@ -85,7 +52,11 @@ public class HarryPotter extends Person {
 
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if (this.memory[i][j].compareTo("n") == 0) {
+                if (this.memory[i][j].compareTo("N") == 0) {
+                    System.out.println("NORRIS FOUND");
+                    this.norrisFound = true;
+                    return;
+                } else if (this.memory[i][j].compareTo("n") == 0) {
                     count++;
                 }
                 if (count > 3) {
@@ -115,7 +86,11 @@ public class HarryPotter extends Person {
 
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if (this.memory[i][j].compareTo("f") == 0) {
+                if (this.memory[i][j].compareTo("F") == 0) {
+                    System.out.println("FILCH FOUND");
+                    this.filchFound = true;
+                    return;
+                } else if (this.memory[i][j].compareTo("f") == 0) {
                     count++;
                 }
                 if (count > 5) {
@@ -311,6 +286,8 @@ public class HarryPotter extends Person {
         }
         System.out.println();
     }
+
+
 }
 
 

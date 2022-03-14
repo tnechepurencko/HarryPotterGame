@@ -1,8 +1,8 @@
 import java.util.Stack;
 
 public class Backtracking extends Search {
-    public Backtracking(HarryPotter hp) {
-        super(hp);
+    public Backtracking(HarryPotter hp, Field field) {
+        super(hp, field);
     }
 
     public void search(Field field) {
@@ -10,29 +10,33 @@ public class Backtracking extends Search {
         stack.push(this.hp.position.copy());
         int step = 0;
 
-        while (!this.hp.exitLibrary) {
+        while (!this.hp.endgame) {
             step++;
             if (this.hp.hasBook) {
                 if (this.hp.position.equals(field.exit)) {
-                    this.hp.exitLibrary = true;
+                    this.hp.endgame = true;
                     System.out.println("YOU WON");
                 } else {
                     goTo(field.exit);
                     stack.push(this.hp.position.copy());
-                    getItem(field, stack);
+                    if (this.getItem()) {
+                        this.markUsefulRoute(stack);
+                    }
+                    this.checkAndPrint(field, step);
                 }
             } else if (!this.hasUnknownAdjacentCells() && !stack.empty() && this.canGoBack()) {
+                System.out.println("BACKTRACK");
                 this.backtrack(stack);
                 this.hp.updateMemory(field);
-                continue;
             } else {
                 Position position = this.closestUnknown();
                 goTo(position);
                 stack.push(this.hp.position.copy());
-                getItem(field, stack);
+                if (this.getItem()) {
+                    this.markUsefulRoute(stack);
+                }
+                this.checkAndPrint(field, step);
             }
-
-            this.checkAndPrint(field, step);
         }
     }
 
@@ -139,19 +143,19 @@ public class Backtracking extends Search {
         stack.push(this.hp.position.copy());
     }
 
-    private void getItem(Field field, Stack<Position> stack) {
-        if (this.hp.position.equals(field.book.position)) {
-            field.scheme[this.hp.position.x][this.hp.position.y] = "·";
-            this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
-            this.hp.hasBook = true;
-            System.out.println("BOOK FOUND");
-            this.markUsefulRoute(stack);
-        } else if (this.hp.position.equals(field.cloak.position)) {
-            field.scheme[this.hp.position.x][this.hp.position.y] = "·";
-            this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
-            this.hp.hasCloak = true;
-            System.out.println("CLOAK FOUND");
-            this.markUsefulRoute(stack);
-        }
-    }
+//    private void getItem(Field field, Stack<Position> stack) {
+//        if (this.hp.position.equals(field.book.position)) {
+//            field.scheme[this.hp.position.x][this.hp.position.y] = "·";
+//            this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
+//            this.hp.hasBook = true;
+//            System.out.println("BOOK FOUND");
+//            this.markUsefulRoute(stack);
+//        } else if (this.hp.position.equals(field.cloak.position)) {
+//            field.scheme[this.hp.position.x][this.hp.position.y] = "·";
+//            this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
+//            this.hp.hasCloak = true;
+//            System.out.println("CLOAK FOUND");
+//            this.markUsefulRoute(stack);
+//        }
+//    }
 }

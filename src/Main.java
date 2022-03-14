@@ -1,12 +1,30 @@
 import java.util.Scanner;
 
+/*
+coordinates examples:
+1
+[0,0] [0,5] [6,3] [7,5] [0,8] [3,5]
+1
+[0,0] [4,2] [7,3] [7,5] [0,8] [3,5]
+1
+ */
+
 public class Main {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
 
+        // TODO cloak stuff
+        // TODO le нюанс: у котика красные глаза, у филча свечка, поэтому гарри их различает в библиотеке
+        // TODO
+
+
         System.out.println("Do you wand to set positions of agents manually? (1-yes, 2-no)");
         String input = scanner.nextLine();
+        while (input.compareTo("1") != 0 && input.compareTo("2") != 0) {
+            System.out.println("Wrong format. Try again:");
+            input = scanner.nextLine();
+        }
         switch (input) {
             case "1" -> {
                 System.out.println("Enter the coordinates, please (example of input: [0,0] [0,5] [6,3] [7,5] [0,8] [3,5])");
@@ -24,13 +42,12 @@ public class Main {
                     return;
                 }
 
-                Backtracking backtracking = new Backtracking(field.hp);
-                AStar aStar = new AStar(field.hp);
+                Backtracking backtracking = new Backtracking(field.hp, field);
+                AStar aStar = new AStar(field.hp, field);
 
 //                backtracking.search(field);
                 aStar.search(field);
-            }
-            case "2" -> {
+            } case "2" -> {
                 System.out.println("Choose the scenario, please (example of input: 1)");
                 String scenario = scanner.nextLine();
 
@@ -82,7 +99,7 @@ public class Main {
 
             }
 
-            if (ok) {
+            if (ok && !wrongCoords(step3)) {
                 break;
             }
             System.out.println("Wrong format. Try again:");
@@ -90,12 +107,44 @@ public class Main {
         return step3;
     }
 
+    static boolean wrongCoords(String[][] coords) {
+        boolean ok = false;
+        Position position = new Position(Integer.parseInt(coords[1][0]), Integer.parseInt(coords[1][1]));
+        Person observerF = new Person(position, "oF");
+        position = new Position(Integer.parseInt(coords[2][0]), Integer.parseInt(coords[2][1]));
+        Person observerN = new Person(position, "oN");
+
+        if (coords[0][0].compareTo("0") != 0 || coords[0][1].compareTo("0") != 0) {
+            System.out.println("Coordinate of Harry is wrong.");
+            ok = true;
+        }
+
+        if (observerF.squarePerception(new Position(Integer.parseInt(coords[3][0]), Integer.parseInt(coords[3][1])), 2) ||
+                observerN.squarePerception(new Position(Integer.parseInt(coords[3][0]), Integer.parseInt(coords[3][1])), 1)) {
+            System.out.println("Coordinate of the book is wrong.");
+            ok = true;
+        }
+
+        if (observerF.squarePerception(new Position(Integer.parseInt(coords[4][0]), Integer.parseInt(coords[4][1])), 2) ||
+                observerN.squarePerception(new Position(Integer.parseInt(coords[3][0]), Integer.parseInt(coords[3][1])), 1)) {
+            System.out.println("Coordinate of the cloak is wrong.");
+            ok = true;
+        }
+
+        if (observerF.squarePerception(new Position(Integer.parseInt(coords[5][0]), Integer.parseInt(coords[5][1])), 2) ||
+                observerN.squarePerception(new Position(Integer.parseInt(coords[3][0]), Integer.parseInt(coords[3][1])), 1)) {
+            System.out.println("Coordinate of the exit is wrong.");
+            ok = true;
+        }
+        return ok;
+    }
+
     static String enterScenario() {
         String s;
 
         while (true) {
             s = scanner.nextLine();
-            if (isScenario(s)) {
+            if (s.compareTo("1") == 0 || s.compareTo("2") == 0) {
                 break;
             }
             System.out.println("Wrong format. Try again:");
@@ -108,9 +157,4 @@ public class Main {
                 s.compareTo("4") != 0 && s.compareTo("5") != 0 && s.compareTo("6") != 0 && s.compareTo("7") != 0 &&
                 s.compareTo("8") != 0;
     }
-
-    static boolean isScenario(String s) {
-        return s.compareTo("1") == 0 || s.compareTo("2") == 0;
-    }
-
 }

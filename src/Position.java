@@ -7,6 +7,14 @@ public class Position {
         this.y = y;
     }
 
+    Position sum(Position delta) {
+        return new Position(this.x + delta.x, this.y + delta.y);
+    }
+
+    boolean positionCorrect() {
+        return this.x > -1 && this.y < 9 && this.y > -1 && this.x < 9;
+    }
+
     /**
      * @param p: position to compare with
      * @return if current position and position "p" are the same.
