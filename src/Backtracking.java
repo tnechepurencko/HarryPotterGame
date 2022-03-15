@@ -30,6 +30,12 @@ public class Backtracking extends Search {
             } else if (this.cannotAccessBook()) {
                 this.hp.endgame = true;
                 System.out.println("YOU CANNOT ACCESS THE BOOK. BAD LUCK:I");
+            } else if (!this.hp.exitChecked) {
+                if (this.hp.position.equals(field.exit)) {
+                    this.hp.exitChecked = true;
+                } else {
+                    this.goTo(field.exit, stack);
+                }
             } else if (this.hp.hasBook) {
                 if (this.hp.position.equals(field.exit)) {
                     this.hp.endgame = true;

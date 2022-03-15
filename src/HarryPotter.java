@@ -8,6 +8,7 @@ public class HarryPotter extends Person {
     boolean hasBook;
     boolean hasCloak;
     boolean endgame;
+    boolean exitChecked; // to see if the cloak is on exit cell
 
     public HarryPotter(int scenario, Position position, Field field) {
         super(position, "H");
@@ -20,6 +21,7 @@ public class HarryPotter extends Person {
         this.hasBook = false;
         this.hasCloak = false;
         this.endgame = false;
+        this.exitChecked = false;
         this.generateMemory();
     }
 
@@ -30,6 +32,7 @@ public class HarryPotter extends Person {
         this.hasBook = false;
         this.hasCloak = false;
         this.endgame = false;
+        this.exitChecked = false;
         this.generateMemory();
         this.prepareHarry();
     }

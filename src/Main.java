@@ -13,11 +13,9 @@ coordinates examples:
 1
 [0,0] [4,2] [7,3] [8,1] [8,0] [3,5]
 1
-[0,0] [4,2] [1,3] [7,5] [0,8] [3,5]
-1
 [0,0] [4,2] [7,3] [7,5] [8,1] [8,0]
 1
-[0,0] [2,2] [7,3] [7,5] [8,1] [8,0]
+[0,0] [0,5] [6,3] [0,8] [3,5] [3,5]
 1
  */
 
@@ -142,13 +140,13 @@ public class Main {
         }
 
         if (observerF.squarePerception(new Position(Integer.parseInt(coords[4][0]), Integer.parseInt(coords[4][1])), 2) ||
-                observerN.squarePerception(new Position(Integer.parseInt(coords[3][0]), Integer.parseInt(coords[3][1])), 1)) {
+                observerN.squarePerception(new Position(Integer.parseInt(coords[4][0]), Integer.parseInt(coords[4][1])), 1)) {
             System.out.println("Coordinate of the cloak is wrong.");
             ok = true;
         }
 
         if (observerF.squarePerception(new Position(Integer.parseInt(coords[5][0]), Integer.parseInt(coords[5][1])), 2) ||
-                observerN.squarePerception(new Position(Integer.parseInt(coords[3][0]), Integer.parseInt(coords[3][1])), 1)) {
+                observerN.squarePerception(new Position(Integer.parseInt(coords[5][0]), Integer.parseInt(coords[5][1])), 1)) {
             System.out.println("Coordinate of the exit is wrong.");
             ok = true;
         }

@@ -138,6 +138,8 @@ public class Search {
 
     protected void checkAndPrint(Field field) {
         this.step++;
+        System.out.println("STEP " + this.step);
+
         if (!this.hp.norrisFound) {
             this.hp.checkNorris(field);
         }
@@ -156,7 +158,6 @@ public class Search {
             e.printStackTrace();
         }
 
-        System.out.println("STEP " + this.step);
         System.out.println("Memory:");
         this.hp.printMemory();
     }

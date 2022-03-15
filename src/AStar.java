@@ -49,6 +49,34 @@ public class AStar extends Search {
             } else if (this.cannotAccessBook()) {
                 this.hp.endgame = true;
                 System.out.println("YOU CANNOT ACCESS THE BOOK. BAD LUCK:I");
+            } else if (!this.hp.exitChecked) {
+                if (this.hp.position.equals(field.exit)) {
+                    this.hp.exitChecked = true;
+                } else {
+                    this.aStarCalculations[this.hp.position.x][this.hp.position.y][0] = 0;
+                    this.aStarCalculations[this.hp.position.x][this.hp.position.y][1] =
+                            Math.abs(field.exit.x - this.hp.position.x) + Math.abs(field.exit.y - this.hp.position.y);
+
+                    shortestWay = new LinkedList<>();
+                    boolean exitFound = false;
+                    this.updateCalculations(field, this.hp.position, field.exit);
+                    this.roadMap[this.hp.position.x][this.hp.position.y] = 1;
+
+                    while (!exitFound && !enemyFound) {
+                        Position position = this.doStep();
+                        this.roadMap[position.x][position.y] = 1;
+                        enemyFound = this.updateCalculations(field, position, field.exit);
+
+                        if (this.aStarCalculations[field.exit.x][field.exit.y][0] < 10000) {
+                            exitFound = true;
+                        }
+                    }
+                    if (!enemyFound) {
+                        this.findShortestPathAndGo(field, field.exit, shortestWay);
+                    } else {
+                        this.checkAndPrint(field);
+                    }
+                }
             } else if (this.hp.hasBook) {
                 if (this.hp.position.equals(field.exit)) {
                     this.hp.endgame = true;
