@@ -1,3 +1,4 @@
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -6,12 +7,16 @@ public class Search {
     protected int[][] BDFirstSearch;
     Field field;
     int step;
+    String result;
+    LinkedList<Position> path;
 
     public Search(HarryPotter hp, Field field) {
         this.hp = hp;
         this.field = field;
         this.generateBDFirstSearch();
+        this.path = new LinkedList<>();
         this.step = 0;
+        this.result = "LOSE";
     }
 
     boolean harryCaught() {

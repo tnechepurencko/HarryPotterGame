@@ -12,6 +12,7 @@ public class Backtracking extends Search {
         System.out.println("\nBACKTRACKING SEARCH");
         this.field.newGame();
         this.getItem();
+        this.path.add(this.hp.position.copy());
 
         this.hp.updateMemory(this.field);
         Stack<Position> stack = new Stack<>();
@@ -40,6 +41,7 @@ public class Backtracking extends Search {
             } else if (this.hp.hasBook) {
                 if (this.hp.position.equals(field.exit)) {
                     this.hp.endgame = true;
+                    this.result = "WON";
                     System.out.println("YOU WON");
                 } else {
                     this.goTo(field.exit, stack);
@@ -131,6 +133,7 @@ public class Backtracking extends Search {
                     this.field.scheme[newPos.x][newPos.y].compareTo("n") != 0) {
                 this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
                 this.hp.position = newPos;
+                this.path.add(newPos);
 
                 System.out.println("STEP " + (this.step + 1));
                 if (this.getItem()) {

@@ -28,6 +28,7 @@ public class AStar extends Search {
         System.out.println("\nA_STAR SEARCH");
         this.field.newGame();
         this.getItem();
+        this.path.add(this.hp.position.copy());
 
         while (!this.hp.endgame) {
             if (this.step == 12) {
@@ -55,6 +56,7 @@ public class AStar extends Search {
             } else if (this.hp.hasBook) {
                 if (this.hp.position.equals(field.exit)) {
                     this.hp.endgame = true;
+                    this.result = "WON";
                     System.out.println("YOU WON");
                 } else {
                     this.goTo(this.field.exit);
@@ -105,6 +107,8 @@ public class AStar extends Search {
             } else {
                 this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
                 this.hp.position = position;
+                this.path.add(position);
+
                 System.out.println("STEP " + (this.step + 1));
                 this.getItem();
                 this.checkAndPrint(field);

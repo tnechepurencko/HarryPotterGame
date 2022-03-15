@@ -46,37 +46,41 @@ public class Main {
                 String scenario = enterScenario();
 
                 Field field = new Field(coords, Integer.parseInt(scenario));
-                System.out.println("Field:");
-                field.print();
-                System.out.println("Memory:");
-                field.hp.printMemory();
-
-                Backtracking backtracking = new Backtracking(field.hp, field);
-                AStar aStar = new AStar(field.hp, field);
-
-                backtracking.search(field);
-                aStar.search(field);
-
-                System.out.println();
-                System.out.println("HARRY ENDS THE GAME TAKING " + backtracking.step + " STEPS USING BACKTRACKING ALGORITHM.");
-                System.out.println("HARRY ENDS THE GAME TAKING " + aStar.step + " STEPS USING A_STAR ALGORITHM.");
+                launchAlgorithms(field);
             } case "2" -> {
                 System.out.println("Choose the scenario, please (example of input: 1)");
                 String scenario = scanner.nextLine();
 
                 Field field = new Field(Integer.parseInt(scenario));
-                field.print();
-
-                Backtracking backtracking = new Backtracking(field.hp, field);
-                AStar aStar = new AStar(field.hp, field);
-
-                backtracking.search(field);
-                aStar.search(field);
-
-                System.out.println();
-                System.out.println("HARRY ENDS THE GAME TAKING " + backtracking.step + " STEPS USING BACKTRACKING ALGORITHM.");
-                System.out.println("HARRY ENDS THE GAME TAKING " + aStar.step + " STEPS USING A_STAR ALGORITHM.");
+                launchAlgorithms(field);
             }
+        }
+    }
+
+    static void launchAlgorithms(Field field) {
+        System.out.println("Field:");
+        field.print();
+        System.out.println("Memory:");
+        field.hp.printMemory();
+
+        Backtracking backtracking = new Backtracking(field.hp, field);
+        AStar aStar = new AStar(field.hp, field);
+
+        backtracking.search(field);
+        aStar.search(field);
+
+        System.out.println();
+        System.out.print("HARRY " + backtracking.result + " THE GAME TAKING " + backtracking.step +
+                " STEPS USING BACKTRACKING ALGORITHM.\nPATH: ");
+        for (int i = 0; i < backtracking.path.size(); i++) {
+            System.out.print("[" + backtracking.path.get(i).x + "," + backtracking.path.get(i).y + "] ");
+        }
+
+        System.out.println("\n");
+        System.out.print("HARRY " + aStar.result + " THE GAME TAKING " + aStar.step +
+                " STEPS USING A_STAR ALGORITHM.\nPATH: ");
+        for (int i = 0; i < aStar.path.size(); i++) {
+            System.out.print("[" + aStar.path.get(i).x + "," + aStar.path.get(i).y + "] ");
         }
     }
 
