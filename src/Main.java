@@ -11,6 +11,14 @@ coordinates examples:
 1
 [0,0] [4,2] [7,3] [7,5] [8,0] [3,5]
 1
+[0,0] [4,2] [7,3] [8,1] [8,0] [3,5]
+1
+[0,0] [4,2] [1,3] [7,5] [0,8] [3,5]
+1
+[0,0] [4,2] [7,3] [7,5] [8,1] [8,0]
+1
+[0,0] [2,2] [7,3] [7,5] [8,1] [8,0]
+1
  */
 
 public class Main {
@@ -19,7 +27,7 @@ public class Main {
     public static void main(String[] args) {
 
         // TODO le нюанс: у котика красные глаза, у филча свечка, поэтому гарри их различает в библиотеке
-        // TODO
+        // TODO cloak can be on exit cell
         // TODO
 
 
@@ -50,7 +58,11 @@ public class Main {
                 AStar aStar = new AStar(field.hp, field);
 
                 backtracking.search(field);
-//                aStar.search(field);
+                aStar.search(field);
+
+                System.out.println();
+                System.out.println("HARRY ENDS THE GAME TAKING " + backtracking.step + " STEPS USING BACKTRACKING ALGORITHM.");
+                System.out.println("HARRY ENDS THE GAME TAKING " + aStar.step + " STEPS USING A_STAR ALGORITHM.");
             } case "2" -> {
                 System.out.println("Choose the scenario, please (example of input: 1)");
                 String scenario = scanner.nextLine();
@@ -70,7 +82,6 @@ public class Main {
 
         while (true) {
             ok = true;
-
             coords = scanner.nextLine();
             step1 = coords.split(" ");
             if (step1.length != 6) {

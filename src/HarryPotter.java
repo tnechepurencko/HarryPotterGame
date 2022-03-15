@@ -1,6 +1,7 @@
 public class HarryPotter extends Person {
     int scenario;
     String[][] memory;
+    Field field;
 
     boolean norrisFound;
     boolean filchFound;
@@ -8,23 +9,35 @@ public class HarryPotter extends Person {
     boolean hasCloak;
     boolean endgame;
 
-    public HarryPotter(int scenario, Position position) {
+    public HarryPotter(int scenario, Position position, Field field) {
         super(position, "H");
+        this.field = field;
+        this.scenario = scenario;
+        this.memory = new String[9][9];
+
         this.norrisFound = false;
         this.filchFound = false;
         this.hasBook = false;
         this.hasCloak = false;
         this.endgame = false;
-
-        this.scenario = scenario;
         this.generateMemory();
     }
 
+    void updateHarry() {
+        this.position = new Position(0, 0);
+        this.norrisFound = false;
+        this.filchFound = false;
+        this.hasBook = false;
+        this.hasCloak = false;
+        this.endgame = false;
+        this.generateMemory();
+        this.prepareHarry();
+    }
+
     /**
-     * The method initializes "memory" and fills it with "·" symbol.
+     * The method fills memory it with "·" symbol.
      */
     void generateMemory() {
-        this.memory = new String[9][9];
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 this.memory[i][j] = "·";
@@ -34,12 +47,10 @@ public class HarryPotter extends Person {
 
     /**
      * The method adds location of exit to memory.
-     * @param exit: position of exit
-     * @param field: current field
      */
-    void prepareHarry(Position exit, Field field) {
-        this.memory[exit.x][exit.y] = "E";
-        updateMemory(field);
+    void prepareHarry() {
+        this.memory[this.field.exit.x][this.field.exit.y] = "E";
+        this.updateMemory(field);
     }
 
     /**
@@ -117,32 +128,30 @@ public class HarryPotter extends Person {
     void updateMemory(Field field) {
         field.update();
 
-//        if (!this.filchFound || !this.norrisFound) {
-            if (this.scenario == 1) {
-                for (int i = this.position.x - 1; i < this.position.x + 2; i++) {
-                    for (int j = this.position.y - 1; j < this.position.y + 2; j++) {
-                        if (i > -1 && i < 9 && j > -1 && j < 9) {
-                            this.memorizeEnemy(field, i, j);
-                        }
-                    }
-                }
-            } else if (this.scenario == 2) {
-                this.memory[this.position.x][this.position.y] = field.scheme[this.position.x][this.position.y];
-
-                int i, j;
-                for (i = this.position.x - 1; i < this.position.x + 2; i++) {
-                    j = this.position.y - 2;
-                    if (i > -1 && i < 9 && j > -1) {
-                        this.memorizeEnemy(field, i, j);
-                    }
-
-                    j = this.position.y + 3;
-                    if (i > -1 && i < 9 && j < 9) {
+        if (this.scenario == 1) {
+            for (int i = this.position.x - 1; i < this.position.x + 2; i++) {
+                for (int j = this.position.y - 1; j < this.position.y + 2; j++) {
+                    if (i > -1 && i < 9 && j > -1 && j < 9) {
                         this.memorizeEnemy(field, i, j);
                     }
                 }
             }
-//        }
+        } else if (this.scenario == 2) {
+            this.memory[this.position.x][this.position.y] = field.scheme[this.position.x][this.position.y];
+
+            int i, j;
+            for (i = this.position.x - 1; i < this.position.x + 2; i++) {
+                j = this.position.y - 2;
+                if (i > -1 && i < 9 && j > -1) {
+                    this.memorizeEnemy(field, i, j);
+                }
+
+                j = this.position.y + 3;
+                if (i > -1 && i < 9 && j < 9) {
+                    this.memorizeEnemy(field, i, j);
+                }
+            }
+        }
 
         this.memory[this.position.x][this.position.y] = "H";
     }

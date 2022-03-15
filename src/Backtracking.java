@@ -3,63 +3,71 @@ import java.util.Queue;
 import java.util.Stack;
 
 public class Backtracking extends Search {
-    int step;
 
     public Backtracking(HarryPotter hp, Field field) {
         super(hp, field);
-        this.step = 0;
     }
 
     public void search(Field field) {
+        System.out.println("\nBACKTRACKING SEARCH");
+        this.field.newGame();
+
+        this.hp.updateMemory(this.field);
         Stack<Position> stack = new Stack<>();
         stack.push(this.hp.position.copy());
 
         while (!this.hp.endgame) {
-            if (this.step == 16) {
+            if (this.step == 2) {
                 int breakpoint = 0;
             }
 
-            if (this.hp.hasBook) {
+            if (this.harryCaught()) {
+                this.hp.endgame = true;
+                System.out.println("YOU LOSE: HARRY WAS CAUGHT.");
+            } else if (this.cannotAccessExit()) {
+                this.hp.endgame = true;
+                System.out.println("YOU CANNOT ACCESS THE EXIT. BAD LUCK:I");
+            } else if (this.cannotAccessBook()) {
+                this.hp.endgame = true;
+                System.out.println("YOU CANNOT ACCESS THE BOOK. BAD LUCK:I");
+            } else if (this.hp.hasBook) {
                 if (this.hp.position.equals(field.exit)) {
                     this.hp.endgame = true;
                     System.out.println("YOU WON");
                 } else {
                     this.goTo(field.exit, stack);
-                    if (this.getItem()) {
-                        this.markUsefulRoute(stack);
-                    }
                 }
-            } else if (!this.hasUnknownAdjacentCells() && !stack.empty() && this.canGoBack()) {
+            } else if (this.noUnknownAdjacentCells() && !stack.empty() && this.canGoBack()) {
                 System.out.println("BACKTRACK");
                 this.backtrack(stack);
                 this.hp.updateMemory(field);
             } else {
                 Position position = this.closestUnknown();
                 this.goTo(position, stack);
-                if (this.getItem()) {
-                    this.markUsefulRoute(stack);
-                }
             }
         }
     }
 
     private void backtrack(Stack<Position> stack) {
-        Position position = stack.pop();
-        this.hp.memory[position.x][position.y] = "r"; // rollback
-        this.hp.position = stack.peek().copy();
+        Position position;
+        while (this.noUnknownAdjacentCells()) {
+            position = stack.pop();
+            this.hp.memory[position.x][position.y] = "r"; // rollback
+            this.hp.position = stack.peek().copy();
+        }
     }
 
-    private boolean hasUnknownAdjacentCells() {
+    private boolean noUnknownAdjacentCells() {
         for (int i = this.hp.position.x - 1; i < this.hp.position.x + 2; i++) {
             for (int j = this.hp.position.y - 1; j < this.hp.position.y + 2; j++) {
                 if (i > -1 && i < 9 && j > -1 && j < 9) {
                     if (this.hp.memory[i][j].compareTo("·") == 0) {
-                        return true;
+                        return false;
                     }
                 }
             }
         }
-        return false;
+        return true;
     }
 
 //    private boolean hasKnownAdjacentCells(Position position) {
@@ -116,9 +124,11 @@ public class Backtracking extends Search {
                     this.field.scheme[newPos.x][newPos.y].compareTo("n") != 0) {
                 this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
                 this.hp.position = newPos;
+                if (this.getItem()) {
+                    this.markUsefulRoute(stack);
+                }
                 stack.push(this.hp.position.copy());
-                this.checkAndPrint(field, this.step);
-                this.step++;
+                this.checkAndPrint(field);
             } else {
                 break;
             }

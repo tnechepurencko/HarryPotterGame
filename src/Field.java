@@ -24,7 +24,7 @@ public class Field {
         generateExit(coords);
 
         this.update();
-        this.hp.prepareHarry(exit, this);
+        this.hp.prepareHarry();
     }
 
     // without input
@@ -37,7 +37,14 @@ public class Field {
         generateExit();
 
         this.update();
-        this.hp.prepareHarry(exit, this);
+        this.hp.prepareHarry();
+    }
+
+    void newGame() {
+        this.hp.updateHarry();
+        this.mrFilch.perception = 2;
+        this.mrsNorris.perception = 1;
+        this.update();
     }
 
     boolean inputCorrect() {
@@ -65,7 +72,7 @@ public class Field {
     // with input
     void generateActors(String[][] coords) {
         Position position = new Position(Integer.parseInt(coords[0][0]), Integer.parseInt(coords[0][1]));
-        this.hp = new HarryPotter(this.scenario, position);
+        this.hp = new HarryPotter(this.scenario, position, this);
 
         position = new Position(Integer.parseInt(coords[1][0]), Integer.parseInt(coords[1][1]));
         this.mrFilch = new Inspector(2, position, "F");
@@ -76,16 +83,11 @@ public class Field {
     // without input
     void generateActors() {
         Position position = new Position(0, 0);
-        this.hp = new HarryPotter(this.scenario, position);
+        this.hp = new HarryPotter(this.scenario, position, this);
 
-        do {
-            position = new Position(random.nextInt(0, 9), random.nextInt(0, 9));
-        } while (position.x < 3 && position.y > 5);
+        position = new Position(random.nextInt(0, 9), random.nextInt(0, 9));
         this.mrFilch = new Inspector(2, position, "F");
-
-        do {
-            position = new Position(random.nextInt(0, 9), random.nextInt(0, 9));
-        } while (position.x < 2 && position.y > 6);
+        position = new Position(random.nextInt(0, 9), random.nextInt(0, 9));
         this.mrsNorris = new Inspector(1, position, "N");
     }
 
@@ -123,8 +125,8 @@ public class Field {
 
         do {
             position = new Position(random.nextInt(0, 8), random.nextInt(0, 8));
-        } while (position.equals(this.mrFilch.position) || position.equals(this.mrsNorris.position) ||
-                position.equals(this.book.position));
+        } while (this.mrsNorris.squarePerception(position, mrsNorris.perception) ||
+                this.mrFilch.squarePerception(position, mrFilch.perception) || position.equals(this.book.position));
 
         this.exit = position;
     }

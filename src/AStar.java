@@ -25,20 +25,28 @@ public class AStar extends Search {
     }
 
     public void search(Field field) {
-        int step = 0;
+        System.out.println("\nA_STAR SEARCH");
+        this.field.newGame();
+
         boolean enemyFound;
         LinkedList<Position> shortestWay;
 
         while (!this.hp.endgame) {
-            if (step == 12) {
+            if (this.step == 12) {
                 int breakpoint = 0;
             }
 
-            step++;
             enemyFound = false;
             this.restartCalculations();
             this.restartRoadMap();
-            if (this.cannotGetBook()) {
+
+            if (this.harryCaught()) {
+                this.hp.endgame = true;
+                System.out.println("YOU LOSE: HARRY WAS CAUGHT.");
+            } else if (this.cannotAccessExit()) {
+                this.hp.endgame = true;
+                System.out.println("YOU CANNOT ACCESS THE EXIT. BAD LUCK:I");
+            } else if (this.cannotAccessBook()) {
                 this.hp.endgame = true;
                 System.out.println("YOU CANNOT ACCESS THE BOOK. BAD LUCK:I");
             } else if (this.hp.hasBook) {
@@ -65,9 +73,9 @@ public class AStar extends Search {
                         }
                     }
                     if (!enemyFound) {
-                        this.findShortestPathAndGo(field, field.exit, shortestWay, step);
+                        this.findShortestPathAndGo(field, field.exit, shortestWay);
                     } else {
-                        this.checkAndPrint(field, step);
+                        this.checkAndPrint(field);
                     }
                 }
             } else {
@@ -84,22 +92,21 @@ public class AStar extends Search {
                 while (!enemyFound) {
                     Position position = this.doStep();
                     this.roadMap[position.x][position.y] = 1;
-                    enemyFound = this.updateCalculations(field, position, target);
-
                     if (this.aStarCalculations[target.x][target.y][0] < 10000) {
                         break;
                     }
+                    enemyFound = this.updateCalculations(field, position, target);
                 }
                 if (!enemyFound) {
-                    this.findShortestPathAndGo(field, target, shortestWay, step);
+                    this.findShortestPathAndGo(field, target, shortestWay);
                 } else {
-                    this.checkAndPrint(field, step);
+                    this.checkAndPrint(field);
                 }
             }
         }
     }
 
-    private void findShortestPathAndGo(Field field, Position target, LinkedList<Position> shortestWay, int stepNumber) {
+    private void findShortestPathAndGo(Field field, Position target, LinkedList<Position> shortestWay) {
         this.restartRoadMap();
         shortestWay.add(target);
         this.roadMap[target.x][target.y] = 1;
@@ -117,8 +124,8 @@ public class AStar extends Search {
             this.hp.position = shortestWay.get(i);
             this.getItem();
 
-            this.checkAndPrint(field, stepNumber);
-            stepNumber++;
+            this.checkAndPrint(field);
+//            this.step++;
         }
     }
 
@@ -150,20 +157,6 @@ public class AStar extends Search {
             }
         }
         return false;
-    }
-
-    private void getItem(Field field) {
-        if (this.hp.position.equals(field.book.position)) {
-            field.scheme[this.hp.position.x][this.hp.position.y] = "·";
-            this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
-            this.hp.hasBook = true;
-            System.out.println("BOOK FOUND");
-        } else if (this.hp.position.equals(field.cloak.position)) {
-            field.scheme[this.hp.position.x][this.hp.position.y] = "·";
-            this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
-            this.hp.hasCloak = true;
-            System.out.println("CLOAK FOUND");
-        }
     }
 
     private void restartCalculations() {
