@@ -1,28 +1,33 @@
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 public class Backtracking extends Search {
+    int step;
+
     public Backtracking(HarryPotter hp, Field field) {
         super(hp, field);
+        this.step = 0;
     }
 
     public void search(Field field) {
         Stack<Position> stack = new Stack<>();
         stack.push(this.hp.position.copy());
-        int step = 0;
 
         while (!this.hp.endgame) {
-            step++;
+            if (this.step == 16) {
+                int breakpoint = 0;
+            }
+
             if (this.hp.hasBook) {
                 if (this.hp.position.equals(field.exit)) {
                     this.hp.endgame = true;
                     System.out.println("YOU WON");
                 } else {
-                    goTo(field.exit);
-                    stack.push(this.hp.position.copy());
+                    this.goTo(field.exit, stack);
                     if (this.getItem()) {
                         this.markUsefulRoute(stack);
                     }
-                    this.checkAndPrint(field, step);
                 }
             } else if (!this.hasUnknownAdjacentCells() && !stack.empty() && this.canGoBack()) {
                 System.out.println("BACKTRACK");
@@ -30,19 +35,17 @@ public class Backtracking extends Search {
                 this.hp.updateMemory(field);
             } else {
                 Position position = this.closestUnknown();
-                goTo(position);
-                stack.push(this.hp.position.copy());
+                this.goTo(position, stack);
                 if (this.getItem()) {
                     this.markUsefulRoute(stack);
                 }
-                this.checkAndPrint(field, step);
             }
         }
     }
 
     private void backtrack(Stack<Position> stack) {
         Position position = stack.pop();
-        this.hp.memory[position.x][position.y] = "☒";
+        this.hp.memory[position.x][position.y] = "r"; // rollback
         this.hp.position = stack.peek().copy();
     }
 
@@ -59,6 +62,22 @@ public class Backtracking extends Search {
         return false;
     }
 
+//    private boolean hasKnownAdjacentCells(Position position) {
+//        String symbol;
+//        for (int i = position.x - 1; i < position.x + 2; i++) {
+//            for (int j = position.y - 1; j < position.y + 2; j++) {
+//                if (i > -1 && i < 9 && j > -1 && j < 9) {
+//                    symbol = this.hp.memory[i][j];
+//                    if (!(symbol.compareTo("·") == 0 || symbol.compareTo("F") == 0 || symbol.compareTo("N") == 0 ||
+//                            symbol.compareTo("f") == 0 || symbol.compareTo("n") == 0)) {
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
+//        return false;
+//    }
+
     private boolean canGoBack() {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
@@ -66,7 +85,7 @@ public class Backtracking extends Search {
                     for (int i1 = i - 1; i1 < i + 2; i1++) {
                         for (int j1 = j - 1; j1 < j + 2; j1++) {
                             if (i1 > -1 && i1 < 9 && j1 > -1 && j1 < 9) {
-                                if (this.hp.memory[i][j].compareTo("·") == 0) {
+                                if (this.hp.memory[i1][j1].compareTo("·") == 0) {
                                     return true;
                                 }
                             }
@@ -78,60 +97,65 @@ public class Backtracking extends Search {
         return false;
     }
 
-    private void goTo(Position position) {
+    private void goTo(Position target, Stack<Position> stack) {
+        LinkedList<Position[]> shortestWay = new LinkedList<>();
+        Queue<Position[]> queue = new LinkedList<>();
         this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
 
-        if (position.upper(this.hp.position)) {
-            if (position.leftward(this.hp.position)) {
-                if (this.hp.canMoveUL()) {
-                    this.hp.moveUL();
-                } else if (this.hp.canMoveLeft()) {
-                    this.hp.moveLeft();
-                } else if (this.hp.canMoveUp()) {
-                    this.hp.moveUp();
-                }
-            } else if (position.rightward(this.hp.position)) {
-                if (this.hp.canMoveUR()) {
-                    this.hp.moveUR();
-                } else if (this.hp.canMoveRight()) {
-                    this.hp.moveRight();
-                } else if (this.hp.canMoveUp()) {
-                    this.hp.moveUp();
-                }
-            } else if (this.hp.canMoveUp()) {
-                this.hp.moveUp();
+        this.updateBDFirstSearch();
+        Position[] p = {this.hp.position, this.hp.position};
+        queue.add(p);
+
+        this.findShortestWay(target, shortestWay, queue);
+
+        for (int i = shortestWay.size() - 2; i > -1; i--) {
+            Position newPos = shortestWay.get(i)[0].copy();
+            if (this.field.scheme[newPos.x][newPos.y].compareTo("F") != 0 &&
+                    this.field.scheme[newPos.x][newPos.y].compareTo("N") != 0 &&
+                    this.field.scheme[newPos.x][newPos.y].compareTo("f") != 0 &&
+                    this.field.scheme[newPos.x][newPos.y].compareTo("n") != 0) {
+                this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
+                this.hp.position = newPos;
+                stack.push(this.hp.position.copy());
+                this.checkAndPrint(field, this.step);
+                this.step++;
+            } else {
+                break;
             }
-        } else if (position.downer(this.hp.position)) {
-            if (position.leftward(this.hp.position)) {
-                if (this.hp.canMoveDL()) {
-                    this.hp.moveDL();
-                } else if (this.hp.canMoveLeft()) {
-                    this.hp.moveLeft();
-                } else if (this.hp.canMoveDown()) {
-                    this.hp.moveDown();
+        }
+    }
+
+    private boolean findShortestWay(Position target, LinkedList<Position[]> shortestWay, Queue<Position[]> queue) {
+        if (!queue.isEmpty()) {
+            Position[] positions = queue.poll();
+            if (positions[0].equals(target)) {
+                Position[] p = {positions[0].copy(), positions[1].copy()};
+                shortestWay.add(p);
+                return true;
+            } else {
+                this.BDFirstSearch[positions[0].x][positions[0].y] = 1;
+                for (Position delta: DELTAS) {
+                    Position newPos = positions[0].sum(delta);
+                    if (newPos.positionCorrect() && this.BDFirstSearch[newPos.x][newPos.y] == 0 &&
+                            this.hp.memory[newPos.x][newPos.y].compareTo("F") != 0 &&
+                            this.hp.memory[newPos.x][newPos.y].compareTo("N") != 0 &&
+                            this.hp.memory[newPos.x][newPos.y].compareTo("f") != 0 &&
+                            this.hp.memory[newPos.x][newPos.y].compareTo("n") != 0) {
+                        Position[] p = {newPos.copy(), positions[0].copy()};
+                        queue.add(p);
+                        this.BDFirstSearch[newPos.x][newPos.y] = 1;
+                    }
                 }
-            } else if (position.rightward(this.hp.position)) {
-                if (this.hp.canMoveRD()) {
-                    this.hp.moveRD();
-                } else if (this.hp.canMoveRight()) {
-                    this.hp.moveRight();
-                } else if (this.hp.canMoveDown()) {
-                    this.hp.moveDown();
-                }
-            } else if (this.hp.canMoveDown()) {
-                this.hp.moveDown();
-            }
-        } else {
-            if (position.leftward(this.hp.position)) {
-                if (this.hp.canMoveLeft()) {
-                    this.hp.moveLeft();
-                }
-            } else if (position.rightward(this.hp.position)) {
-                if (this.hp.canMoveRight()) {
-                    this.hp.moveRight();
+                if (this.findShortestWay(target, shortestWay, queue)) {
+                    if (shortestWay.get(shortestWay.size() - 1)[1].equals(positions[0])) {
+                        Position[] p = {positions[0].copy(), positions[1].copy()};
+                        shortestWay.add(p);
+                    }
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     private void markUsefulRoute(Stack<Position> stack) {
@@ -142,20 +166,4 @@ public class Backtracking extends Search {
         }
         stack.push(this.hp.position.copy());
     }
-
-//    private void getItem(Field field, Stack<Position> stack) {
-//        if (this.hp.position.equals(field.book.position)) {
-//            field.scheme[this.hp.position.x][this.hp.position.y] = "·";
-//            this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
-//            this.hp.hasBook = true;
-//            System.out.println("BOOK FOUND");
-//            this.markUsefulRoute(stack);
-//        } else if (this.hp.position.equals(field.cloak.position)) {
-//            field.scheme[this.hp.position.x][this.hp.position.y] = "·";
-//            this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
-//            this.hp.hasCloak = true;
-//            System.out.println("CLOAK FOUND");
-//            this.markUsefulRoute(stack);
-//        }
-//    }
 }

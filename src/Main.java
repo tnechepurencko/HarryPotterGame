@@ -7,6 +7,10 @@ coordinates examples:
 1
 [0,0] [4,2] [7,3] [7,5] [0,8] [3,5]
 1
+[0,0] [0,5] [6,3] [0,8] [8,8] [3,5]
+1
+[0,0] [4,2] [7,3] [7,5] [8,0] [3,5]
+1
  */
 
 public class Main {
@@ -14,8 +18,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // TODO cloak stuff
         // TODO le нюанс: у котика красные глаза, у филча свечка, поэтому гарри их различает в библиотеке
+        // TODO
         // TODO
 
 
@@ -45,8 +49,8 @@ public class Main {
                 Backtracking backtracking = new Backtracking(field.hp, field);
                 AStar aStar = new AStar(field.hp, field);
 
-//                backtracking.search(field);
-                aStar.search(field);
+                backtracking.search(field);
+//                aStar.search(field);
             } case "2" -> {
                 System.out.println("Choose the scenario, please (example of input: 1)");
                 String scenario = scanner.nextLine();
@@ -70,6 +74,7 @@ public class Main {
             coords = scanner.nextLine();
             step1 = coords.split(" ");
             if (step1.length != 6) {
+                System.out.println("Wrong format. Try again:");
                 continue;
             }
 

@@ -3,7 +3,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Search {
     protected HarryPotter hp;
-    int[][] DFS;
+    protected int[][] BDFirstSearch;
     Field field;
 
     public Search(HarryPotter hp, Field field) {
@@ -16,14 +16,14 @@ public class Search {
      * The method initializes "BFS" and fills it with zeros.
      */
     void generateDFS() {
-        this.DFS = new int[9][9];
-        this.updateDFS();
+        this.BDFirstSearch = new int[9][9];
+        this.updateBDFirstSearch();
     }
 
-    void updateDFS() {
+    void updateBDFirstSearch() {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                this.DFS[i][j] = 0;
+                this.BDFirstSearch[i][j] = 0;
             }
         }
     }
@@ -72,29 +72,42 @@ public class Search {
             new Position(1, 0), new Position(0, 1), new Position(1, 1), new Position(-1, -1),
             new Position(-1, 1), new Position(1, -1));
 
+//    void findBoundedArea(Position current) {
+//        String symbol = this.hp.memory[current.x][current.y];
+//        if (symbol.compareTo("F") == 0 || symbol.compareTo("N") == 0 ||
+//                symbol.compareTo("f") == 0 || symbol.compareTo("n") == 0) {
+//            this.BDFirstSearch[current.x][current.y] = 1;
+//        } else {
+//            this.BDFirstSearch[current.x][current.y] = 1;
+//            for (Position delta: DELTAS) {
+//                Position newPos = current.sum(delta);
+//                if (newPos.positionCorrect() && this.BDFirstSearch[newPos.x][newPos.y] == 0) {
+//                    this.findBoundedArea(newPos);
+//                }
+//            }
+//        }
+//    }
+
     void findBoundedArea(Position current) {
         String symbol = this.hp.memory[current.x][current.y];
-        if (symbol.compareTo("F") == 0 || symbol.compareTo("N") == 0 ||
-                symbol.compareTo("f") == 0 || symbol.compareTo("n") == 0) {
-            this.DFS[current.x][current.y] = 1;
-        } else {
-            this.DFS[current.x][current.y] = 1;
-            for (Position delta: DELTAS) {
-                Position newPos = current.sum(delta);
-                if (newPos.positionCorrect() && this.DFS[newPos.x][newPos.y] == 0) {
-                    this.findBoundedArea(newPos);
-                }
+        this.BDFirstSearch[current.x][current.y] = 1;
+        for (Position delta: DELTAS) {
+            Position newPos = current.sum(delta);
+            if (newPos.positionCorrect() && this.BDFirstSearch[newPos.x][newPos.y] == 0 &&
+                    !(symbol.compareTo("F") == 0 || symbol.compareTo("N") == 0 ||
+                            symbol.compareTo("f") == 0 || symbol.compareTo("n") == 0)) {
+                this.findBoundedArea(newPos);
             }
         }
     }
 
     boolean boundedAreaExists() {
-        this.updateDFS();
+        this.updateBDFirstSearch();
         this.findBoundedArea(this.hp.position);
         boolean ans = false;
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if (this.DFS[i][j] == 0 && this.hp.memory[i][j].compareTo("b") != 0) {
+                if (this.BDFirstSearch[i][j] == 0 && this.hp.memory[i][j].compareTo("b") != 0) {
                     ans = true;
                     if (this.hp.memory[i][j].compareTo("F") != 0 || this.hp.memory[i][j].compareTo("N") != 0 ||
                             this.hp.memory[i][j].compareTo("f") != 0 || this.hp.memory[i][j].compareTo("n") != 0) {
