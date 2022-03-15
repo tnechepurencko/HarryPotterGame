@@ -31,10 +31,6 @@ public class AStar extends Search {
         this.path.add(this.hp.position.copy());
 
         while (!this.hp.endgame) {
-            if (this.step == 12) {
-                int breakpoint = 0;
-            }
-
             this.restartCalculations();
             this.restartRoadMap();
 
@@ -82,16 +78,15 @@ public class AStar extends Search {
             this.roadMap[position.x][position.y] = 1;
             this.updateCalculations(position, target);
         } while (this.aStarCalculations[target.x][target.y][0] >= 10000);
-        this.findShortestPathAndGo(field, target, shortestWay);
+        this.findShortestPathAndGo(target, shortestWay);
     }
 
-    private void findShortestPathAndGo(Field field, Position target, LinkedList<Position> shortestWay) {
+    private void findShortestPathAndGo(Position target, LinkedList<Position> shortestWay) {
         this.restartRoadMap();
         shortestWay.add(target);
         this.roadMap[target.x][target.y] = 1;
         Position position = this.findPartOfShortestWay(target);
         while (!position.equals(this.hp.position)) {
-//            this.printCalculations();
             shortestWay.add(position);
             this.roadMap[position.x][position.y] = 1;
             position = this.findPartOfShortestWay(position);
@@ -99,10 +94,7 @@ public class AStar extends Search {
 
         for (int i = shortestWay.size() - 1; i >= 0; i--) {
             position = shortestWay.get(i);
-            if (this.hp.memory[position.x][position.y].compareTo("F") == 0 ||
-                    this.hp.memory[position.x][position.y].compareTo("N") == 0 ||
-                    this.hp.memory[position.x][position.y].compareTo("f") == 0 ||
-                    this.hp.memory[position.x][position.y].compareTo("n") == 0) {
+            if (!this.hp.notEnemy(position)) {
                 break;
             } else {
                 this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
@@ -111,7 +103,7 @@ public class AStar extends Search {
 
                 System.out.println("STEP " + (this.step + 1));
                 this.getItem();
-                this.checkAndPrint(field);
+                this.checkAndPrint();
             }
         }
     }
@@ -120,9 +112,7 @@ public class AStar extends Search {
         int sum, heuristics, newSum, newHeuristics;
         for (int i = current.x - 1; i < current.x + 2; i++) {
             for (int j = current.y - 1; j < current.y + 2; j++) {
-                if (i > -1 && i < 9 && j > -1 && j < 9 && this.hp.memory[i][j].compareTo("F") != 0 &&
-                        this.hp.memory[i][j].compareTo("N") != 0 && this.hp.memory[i][j].compareTo("f") != 0 &&
-                        this.hp.memory[i][j].compareTo("n") != 0) {
+                if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
                     heuristics = this.aStarCalculations[i][j][1];
                     sum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1];
                     newHeuristics = Math.abs(i - target.x) + Math.abs(j - target.y);
@@ -157,7 +147,7 @@ public class AStar extends Search {
 
         for (int i = position.x - 1; i < position.x + 2; i++) {
             for (int j = position.y - 1; j < position.y + 2; j++) {
-                if (i > -1 && i < 9 && j > -1 && j < 9 && this.roadMap[i][j] == 0) {
+                if (Position.correct(i, j) && this.roadMap[i][j] == 0) {
                     if (minGain > this.aStarCalculations[i][j][0]) {
                         minGain = this.aStarCalculations[i][j][0];
                         x = i;
@@ -192,19 +182,5 @@ public class AStar extends Search {
             }
         }
         return new Position(x, y);
-    }
-
-    void printCalculations() {
-        for (int i = 8; i > -1; i--) {
-            for (int j = 0; j < 9; j++) {
-                System.out.print(this.aStarCalculations[i][j][0] + " " + this.aStarCalculations[i][j][1]);
-                if (this.aStarCalculations[i][j][0] != 10000) {
-                    System.out.print("        ");
-                }
-                System.out.print("; ");
-            }
-            System.out.println();
-        }
-        System.out.println();
     }
 }

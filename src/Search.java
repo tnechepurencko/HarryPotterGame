@@ -20,8 +20,7 @@ public class Search {
     }
 
     boolean harryCaught() {
-        return this.field.mrFilch.squarePerception(this.hp.position, this.field.mrFilch.perception) ||
-                this.field.mrsNorris.squarePerception(this.hp.position, this.field.mrsNorris.perception);
+        return this.field.mrFilch.seeItem(this.hp.position) || this.field.mrsNorris.seeItem(this.hp.position);
     }
 
     /**
@@ -93,22 +92,17 @@ public class Search {
             new Position(-1, 1), new Position(1, -1));
 
     void findBoundedArea(Position current) {
-        String symbol = this.hp.memory[current.x][current.y];
         this.BDFirstSearch[current.x][current.y] = 1;
+        Position newPos;
         for (Position delta: DELTAS) {
-            Position newPos = current.sum(delta);
-            if (newPos.positionCorrect() && this.BDFirstSearch[newPos.x][newPos.y] == 0 &&
-                    !(symbol.compareTo("F") == 0 || symbol.compareTo("N") == 0 ||
-                            symbol.compareTo("f") == 0 || symbol.compareTo("n") == 0)) {
+            newPos = current.sum(delta);
+            if (newPos.correct() && this.BDFirstSearch[newPos.x][newPos.y] == 0 && this.hp.notEnemy(current)) {
                 this.findBoundedArea(newPos);
             }
         }
     }
 
     boolean boundedAreaExists() {
-        if (this.step == 3) {
-            int breakpoint = 0;
-        }
         this.updateBDFirstSearch();
         this.findBoundedArea(this.hp.position);
         boolean ans = false;
@@ -116,8 +110,7 @@ public class Search {
             for (int j = 0; j < 9; j++) {
                 if (this.BDFirstSearch[i][j] == 0 && this.hp.memory[i][j].compareTo("b") != 0) {
                     ans = true;
-                    if (this.hp.memory[i][j].compareTo("F") != 0 || this.hp.memory[i][j].compareTo("N") != 0 ||
-                            this.hp.memory[i][j].compareTo("f") != 0 || this.hp.memory[i][j].compareTo("n") != 0) {
+                    if (this.hp.notEnemy(i, j)) {
                         this.hp.memory[i][j] = "b";
                     }
                 }
@@ -130,7 +123,7 @@ public class Search {
         for (int radius = 1; radius < 8; radius++) {
             for (int i = this.hp.position.x - radius; i < this.hp.position.x + radius + 1; i++) {
                 for (int j = this.hp.position.y - radius; j < this.hp.position.y + radius + 1; j++) {
-                    if (i > -1 && i < 9 && j > -1 && j < 9) {
+                    if (Position.correct(i, j)) {
                         if (this.hp.memory[i][j].compareTo("·") == 0) {
                             return new Position(i, j);
                         }
@@ -141,17 +134,17 @@ public class Search {
         return new Position(-1, -1);
     }
 
-    protected void checkAndPrint(Field field) {
+    protected void checkAndPrint() {
         this.step++;
 
         if (!this.hp.norrisFound) {
-            this.hp.checkNorris(field);
+            this.hp.checkNorris();
         }
         if (!this.hp.filchFound) {
-            this.hp.checkFilch(field);
+            this.hp.checkFilch();
         }
 
-        this.hp.updateMemory(field);
+        this.hp.updateMemory();
         if (this.boundedAreaExists()) {
             System.out.println("BOUNDED AREA FOUND");
         }

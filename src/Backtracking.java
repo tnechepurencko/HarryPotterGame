@@ -14,15 +14,11 @@ public class Backtracking extends Search {
         this.getItem();
         this.path.add(this.hp.position.copy());
 
-        this.hp.updateMemory(this.field);
+        this.hp.updateMemory();
         Stack<Position> stack = new Stack<>();
         stack.push(this.hp.position.copy());
 
         while (!this.hp.endgame) {
-            if (this.step == 2) {
-                int breakpoint = 0;
-            }
-
             if (this.harryCaught()) {
                 this.hp.endgame = true;
                 System.out.println("YOU LOSE: HARRY WAS CAUGHT.");
@@ -49,7 +45,7 @@ public class Backtracking extends Search {
             } else if (this.noUnknownAdjacentCells() && !stack.empty() && this.canGoBack()) {
                 System.out.println("BACKTRACK");
                 this.backtrack(stack);
-                this.hp.updateMemory(field);
+                this.hp.updateMemory();
             } else {
                 Position position = this.closestUnknown();
                 this.goTo(position, stack);
@@ -69,7 +65,7 @@ public class Backtracking extends Search {
     private boolean noUnknownAdjacentCells() {
         for (int i = this.hp.position.x - 1; i < this.hp.position.x + 2; i++) {
             for (int j = this.hp.position.y - 1; j < this.hp.position.y + 2; j++) {
-                if (i > -1 && i < 9 && j > -1 && j < 9) {
+                if (Position.correct(i, j)) {
                     if (this.hp.memory[i][j].compareTo("·") == 0) {
                         return false;
                     }
@@ -79,29 +75,13 @@ public class Backtracking extends Search {
         return true;
     }
 
-//    private boolean hasKnownAdjacentCells(Position position) {
-//        String symbol;
-//        for (int i = position.x - 1; i < position.x + 2; i++) {
-//            for (int j = position.y - 1; j < position.y + 2; j++) {
-//                if (i > -1 && i < 9 && j > -1 && j < 9) {
-//                    symbol = this.hp.memory[i][j];
-//                    if (!(symbol.compareTo("·") == 0 || symbol.compareTo("F") == 0 || symbol.compareTo("N") == 0 ||
-//                            symbol.compareTo("f") == 0 || symbol.compareTo("n") == 0)) {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//        return false;
-//    }
-
     private boolean canGoBack() {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 if (this.hp.memory[i][j].compareTo("x") == 0) {
                     for (int i1 = i - 1; i1 < i + 2; i1++) {
                         for (int j1 = j - 1; j1 < j + 2; j1++) {
-                            if (i1 > -1 && i1 < 9 && j1 > -1 && j1 < 9) {
+                            if (Position.correct(i1, j1)) {
                                 if (this.hp.memory[i1][j1].compareTo("·") == 0) {
                                     return true;
                                 }
@@ -127,10 +107,7 @@ public class Backtracking extends Search {
 
         for (int i = shortestWay.size() - 2; i > -1; i--) {
             Position newPos = shortestWay.get(i)[0].copy();
-            if (this.field.scheme[newPos.x][newPos.y].compareTo("F") != 0 &&
-                    this.field.scheme[newPos.x][newPos.y].compareTo("N") != 0 &&
-                    this.field.scheme[newPos.x][newPos.y].compareTo("f") != 0 &&
-                    this.field.scheme[newPos.x][newPos.y].compareTo("n") != 0) {
+            if (this.field.notEnemy(newPos)) {
                 this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
                 this.hp.position = newPos;
                 this.path.add(newPos);
@@ -140,7 +117,7 @@ public class Backtracking extends Search {
                     this.markUsefulRoute(stack);
                 }
                 stack.push(this.hp.position.copy());
-                this.checkAndPrint(field);
+                this.checkAndPrint();
             } else {
                 break;
             }
@@ -158,11 +135,7 @@ public class Backtracking extends Search {
                 this.BDFirstSearch[positions[0].x][positions[0].y] = 1;
                 for (Position delta: DELTAS) {
                     Position newPos = positions[0].sum(delta);
-                    if (newPos.positionCorrect() && this.BDFirstSearch[newPos.x][newPos.y] == 0 &&
-                            this.hp.memory[newPos.x][newPos.y].compareTo("F") != 0 &&
-                            this.hp.memory[newPos.x][newPos.y].compareTo("N") != 0 &&
-                            this.hp.memory[newPos.x][newPos.y].compareTo("f") != 0 &&
-                            this.hp.memory[newPos.x][newPos.y].compareTo("n") != 0) {
+                    if (newPos.correct() && this.BDFirstSearch[newPos.x][newPos.y] == 0 && this.hp.notEnemy(newPos)) {
                         Position[] p = {newPos.copy(), positions[0].copy()};
                         queue.add(p);
                         this.BDFirstSearch[newPos.x][newPos.y] = 1;

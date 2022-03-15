@@ -53,15 +53,14 @@ public class HarryPotter extends Person {
      */
     void prepareHarry() {
         this.memory[this.field.exit.x][this.field.exit.y] = "E";
-        this.updateMemory(field);
+        this.updateMemory();
     }
 
     /**
      * The method checks if Harry can determine location of Norris.
-     * @param field: current field
      */
-    void checkNorris(Field field) {
-        int x = field.mrsNorris.position.x, y = field.mrsNorris.position.y;
+    void checkNorris() {
+        int x = this.field.mrsNorris.position.x, y = this.field.mrsNorris.position.y;
         int count = 0;
 
         for (int i = 0; i < 9; i++) {
@@ -78,7 +77,7 @@ public class HarryPotter extends Person {
                     System.out.println("NORRIS FOUND");
                     for (int i1 = x - 1; i1 < x + 2; i1++) {
                         for (int j1 = y - 1; j1 < y + 2; j1++) {
-                            if (i1 > -1 && i1 < 9 && j1 > -1 && j1 < 9) {
+                            if (Position.correct(i1, j1)) {
                                 this.memory[i1][j1] = "n";
                             }
                         }
@@ -92,10 +91,9 @@ public class HarryPotter extends Person {
 
     /**
      * The method checks if Harry can determine location of Filch.
-     * @param field: current field
      */
-    void checkFilch(Field field) {
-        int x = field.mrFilch.position.x, y = field.mrFilch.position.y;
+    void checkFilch() {
+        int x = this.field.mrFilch.position.x, y = this.field.mrFilch.position.y;
         int count = 0;
 
         for (int i = 0; i < 9; i++) {
@@ -112,7 +110,7 @@ public class HarryPotter extends Person {
                     System.out.println("FILCH FOUND");
                     for (int i1 = x - 2; i1 < x + 3; i1++) {
                         for (int j1 = y - 2; j1 < y + 3; j1++) {
-                            if (i1 > -1 && i1 < 9 && j1 > -1 && j1 < 9) {
+                            if (Position.correct(i1, j1)) {
                                 this.memory[i1][j1] = "f";
                             }
                         }
@@ -126,32 +124,31 @@ public class HarryPotter extends Person {
 
     /**
      * The method adds cells Harry discovered to his memory.
-     * @param field: current field
      */
-    void updateMemory(Field field) {
-        field.update();
+    void updateMemory() {
+        this.field.update();
 
         if (this.scenario == 1) {
             for (int i = this.position.x - 1; i < this.position.x + 2; i++) {
                 for (int j = this.position.y - 1; j < this.position.y + 2; j++) {
-                    if (i > -1 && i < 9 && j > -1 && j < 9) {
-                        this.memorizeEnemy(field, i, j);
+                    if (Position.correct(i, j)) {
+                        this.memorizeEnemy(i, j);
                     }
                 }
             }
         } else if (this.scenario == 2) {
-            this.memory[this.position.x][this.position.y] = field.scheme[this.position.x][this.position.y];
+            this.memory[this.position.x][this.position.y] = this.field.scheme[this.position.x][this.position.y];
 
             int i, j;
             for (i = this.position.x - 1; i < this.position.x + 2; i++) {
                 j = this.position.y - 2;
                 if (i > -1 && i < 9 && j > -1) {
-                    this.memorizeEnemy(field, i, j);
+                    this.memorizeEnemy(i, j);
                 }
 
                 j = this.position.y + 3;
                 if (i > -1 && i < 9 && j < 9) {
-                    this.memorizeEnemy(field, i, j);
+                    this.memorizeEnemy(i, j);
                 }
             }
         }
@@ -159,10 +156,21 @@ public class HarryPotter extends Person {
         this.memory[this.position.x][this.position.y] = "H";
     }
 
-    private void memorizeEnemy(Field field, int i, int j) {
-        if (field.scheme[i][j].compareTo("F") == 0 || field.scheme[i][j].compareTo("f") == 0 ||
-                field.scheme[i][j].compareTo("N") == 0 || field.scheme[i][j].compareTo("n") == 0) {
-            this.memory[i][j] = field.scheme[i][j];
+    boolean notEnemy(Position position) {
+        return this.memory[position.x][position.y].compareTo("F") != 0 &&
+                this.memory[position.x][position.y].compareTo("N") != 0 &&
+                this.memory[position.x][position.y].compareTo("f") != 0 &&
+                this.memory[position.x][position.y].compareTo("n") != 0;
+    }
+
+    boolean notEnemy(int x, int y) {
+        return this.memory[x][y].compareTo("F") != 0 && this.memory[x][y].compareTo("N") != 0 &&
+                this.memory[x][y].compareTo("f") != 0 && this.memory[x][y].compareTo("n") != 0;
+    }
+
+    private void memorizeEnemy(int i, int j) {
+        if (!this.field.notEnemy(i, j)) {
+            this.memory[i][j] = this.field.scheme[i][j];
         }
     }
 
@@ -178,8 +186,6 @@ public class HarryPotter extends Person {
         }
         System.out.println();
     }
-
-
 }
 
 

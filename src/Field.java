@@ -81,14 +81,12 @@ public class Field {
 
         do {
             position = new Position(random.nextInt(0, 9), random.nextInt(0, 9));
-        } while (this.mrsNorris.squarePerception(position, mrsNorris.perception) ||
-                this.mrFilch.squarePerception(position, mrFilch.perception));
+        } while (this.mrsNorris.seeItem(position) || this.mrFilch.seeItem(position));
         this.book = new Item(position);
 
         do {
             position = new Position(random.nextInt(0, 9), random.nextInt(0, 9));
-        } while (this.mrsNorris.squarePerception(position, mrsNorris.perception) ||
-                this.mrFilch.squarePerception(position, mrFilch.perception));
+        } while (this.mrsNorris.seeItem(position) || this.mrFilch.seeItem(position));
         this.cloak = new Item(position);
     }
 
@@ -103,8 +101,7 @@ public class Field {
 
         do {
             position = new Position(random.nextInt(0, 8), random.nextInt(0, 8));
-        } while (this.mrsNorris.squarePerception(position, mrsNorris.perception) ||
-                this.mrFilch.squarePerception(position, mrFilch.perception) || position.equals(this.book.position));
+        } while (this.mrsNorris.seeItem(position) || this.mrFilch.seeItem(position) || position.equals(this.book.position));
 
         this.exit = position;
     }
@@ -135,11 +132,23 @@ public class Field {
     void generatePerception(Inspector inspector) {
         for (int i = inspector.position.x - inspector.perception; i < inspector.position.x + inspector.perception+ 1; i++) {
             for (int j = inspector.position.y - inspector.perception; j < inspector.position.y + inspector.perception + 1; j++) {
-                if (i > -1 && i < 9 && j > -1 && j < 9) {
+                if (Position.correct(i, j)) {
                     this.scheme[i][j] = inspector.symbol.toLowerCase(Locale.ROOT);
                 }
             }
         }
+    }
+
+    boolean notEnemy(Position position) {
+        return this.scheme[position.x][position.y].compareTo("F") != 0 &&
+                this.scheme[position.x][position.y].compareTo("N") != 0 &&
+                this.scheme[position.x][position.y].compareTo("f") != 0 &&
+                this.scheme[position.x][position.y].compareTo("n") != 0;
+    }
+
+    boolean notEnemy(int x, int y) {
+        return this.scheme[x][y].compareTo("F") != 0 && this.scheme[x][y].compareTo("N") != 0 &&
+                this.scheme[x][y].compareTo("f") != 0 && this.scheme[x][y].compareTo("n") != 0;
     }
 
     void print() {

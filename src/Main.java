@@ -1,36 +1,12 @@
 import java.util.Scanner;
 
-/*
-coordinates examples:
-2
-1
-
-[0,0] [0,5] [6,3] [7,5] [0,8] [3,5]
-1
-[0,0] [4,2] [7,3] [7,5] [0,8] [3,5]
-1
-[0,0] [0,5] [6,3] [0,8] [8,8] [3,5]
-1
-[0,0] [4,2] [7,3] [7,5] [8,0] [3,5]
-1
-[0,0] [4,2] [7,3] [8,1] [8,0] [3,5]
-1
-[0,0] [4,2] [7,3] [7,5] [8,1] [8,0]
-1
-[0,0] [0,5] [6,3] [0,8] [3,5] [3,5]
-1
-[0,0] [1,4] [5,3] [5,1] [7,5] [7,5]
-1
-[0,0] [1,4] [5,3] [0,0] [7,5] [7,5]
-1
- */
-
 public class Main {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
 
         // TODO le нюанс: у котика красные глаза, у филча свечка, поэтому гарри их различает в библиотеке
+        // TODO check 2nd scenario
 
         System.out.println("Do you wand to set positions of agents manually? (1-yes, 2-no)");
         String input = scanner.nextLine();
@@ -137,29 +113,29 @@ public class Main {
     static boolean wrongCoords(String[][] coords) {
         boolean ok = false;
         Position position = new Position(Integer.parseInt(coords[1][0]), Integer.parseInt(coords[1][1]));
-        Person observerF = new Person(position, "oF");
+        Inspector observerF = new Inspector(2, position, "oF");
         position = new Position(Integer.parseInt(coords[2][0]), Integer.parseInt(coords[2][1]));
-        Person observerN = new Person(position, "oN");
+        Inspector observerN = new Inspector(1, position, "oN");
 
         if (coords[0][0].compareTo("0") != 0 || coords[0][1].compareTo("0") != 0) {
             System.out.println("Coordinate of Harry is wrong.");
             ok = true;
         }
 
-        if (observerF.squarePerception(new Position(Integer.parseInt(coords[3][0]), Integer.parseInt(coords[3][1])), 2) ||
-                observerN.squarePerception(new Position(Integer.parseInt(coords[3][0]), Integer.parseInt(coords[3][1])), 1)) {
+        position = new Position(Integer.parseInt(coords[3][0]), Integer.parseInt(coords[3][1]));
+        if (observerF.seeItem(position) || observerN.seeItem(position)) {
             System.out.println("Coordinate of the book is wrong.");
             ok = true;
         }
 
-        if (observerF.squarePerception(new Position(Integer.parseInt(coords[4][0]), Integer.parseInt(coords[4][1])), 2) ||
-                observerN.squarePerception(new Position(Integer.parseInt(coords[4][0]), Integer.parseInt(coords[4][1])), 1)) {
+        position = new Position(Integer.parseInt(coords[4][0]), Integer.parseInt(coords[4][1]));
+        if (observerF.seeItem(position) || observerN.seeItem(position)) {
             System.out.println("Coordinate of the cloak is wrong.");
             ok = true;
         }
 
-        if (observerF.squarePerception(new Position(Integer.parseInt(coords[5][0]), Integer.parseInt(coords[5][1])), 2) ||
-                observerN.squarePerception(new Position(Integer.parseInt(coords[5][0]), Integer.parseInt(coords[5][1])), 1)) {
+        position = new Position(Integer.parseInt(coords[5][0]), Integer.parseInt(coords[5][1]));
+        if (observerF.seeItem(position) || observerN.seeItem(position)) {
             System.out.println("Coordinate of the exit is wrong.");
             ok = true;
         }
