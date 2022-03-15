@@ -11,6 +11,7 @@ public class Backtracking extends Search {
     public void search(Field field) {
         System.out.println("\nBACKTRACKING SEARCH");
         this.field.newGame();
+        this.getItem();
 
         this.hp.updateMemory(this.field);
         Stack<Position> stack = new Stack<>();
@@ -130,6 +131,8 @@ public class Backtracking extends Search {
                     this.field.scheme[newPos.x][newPos.y].compareTo("n") != 0) {
                 this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
                 this.hp.position = newPos;
+
+                System.out.println("STEP " + (this.step + 1));
                 if (this.getItem()) {
                     this.markUsefulRoute(stack);
                 }

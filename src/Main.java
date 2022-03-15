@@ -2,7 +2,9 @@ import java.util.Scanner;
 
 /*
 coordinates examples:
+2
 1
+
 [0,0] [0,5] [6,3] [7,5] [0,8] [3,5]
 1
 [0,0] [4,2] [7,3] [7,5] [0,8] [3,5]
@@ -17,6 +19,10 @@ coordinates examples:
 1
 [0,0] [0,5] [6,3] [0,8] [3,5] [3,5]
 1
+[0,0] [1,4] [5,3] [5,1] [7,5] [7,5]
+1
+[0,0] [1,4] [5,3] [0,0] [7,5] [7,5]
+1
  */
 
 public class Main {
@@ -25,9 +31,6 @@ public class Main {
     public static void main(String[] args) {
 
         // TODO le нюанс: у котика красные глаза, у филча свечка, поэтому гарри их различает в библиотеке
-        // TODO cloak can be on exit cell
-        // TODO
-
 
         System.out.println("Do you wand to set positions of agents manually? (1-yes, 2-no)");
         String input = scanner.nextLine();
@@ -48,10 +51,6 @@ public class Main {
                 System.out.println("Memory:");
                 field.hp.printMemory();
 
-                if (!field.inputCorrect()) {
-                    return;
-                }
-
                 Backtracking backtracking = new Backtracking(field.hp, field);
                 AStar aStar = new AStar(field.hp, field);
 
@@ -67,6 +66,16 @@ public class Main {
 
                 Field field = new Field(Integer.parseInt(scenario));
                 field.print();
+
+                Backtracking backtracking = new Backtracking(field.hp, field);
+                AStar aStar = new AStar(field.hp, field);
+
+                backtracking.search(field);
+                aStar.search(field);
+
+                System.out.println();
+                System.out.println("HARRY ENDS THE GAME TAKING " + backtracking.step + " STEPS USING BACKTRACKING ALGORITHM.");
+                System.out.println("HARRY ENDS THE GAME TAKING " + aStar.step + " STEPS USING A_STAR ALGORITHM.");
             }
         }
     }

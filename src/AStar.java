@@ -27,16 +27,13 @@ public class AStar extends Search {
     public void search(Field field) {
         System.out.println("\nA_STAR SEARCH");
         this.field.newGame();
-
-        boolean enemyFound;
-        LinkedList<Position> shortestWay;
+        this.getItem();
 
         while (!this.hp.endgame) {
             if (this.step == 12) {
                 int breakpoint = 0;
             }
 
-            enemyFound = false;
             this.restartCalculations();
             this.restartRoadMap();
 
@@ -53,85 +50,37 @@ public class AStar extends Search {
                 if (this.hp.position.equals(field.exit)) {
                     this.hp.exitChecked = true;
                 } else {
-                    this.aStarCalculations[this.hp.position.x][this.hp.position.y][0] = 0;
-                    this.aStarCalculations[this.hp.position.x][this.hp.position.y][1] =
-                            Math.abs(field.exit.x - this.hp.position.x) + Math.abs(field.exit.y - this.hp.position.y);
-
-                    shortestWay = new LinkedList<>();
-                    boolean exitFound = false;
-                    this.updateCalculations(field, this.hp.position, field.exit);
-                    this.roadMap[this.hp.position.x][this.hp.position.y] = 1;
-
-                    while (!exitFound && !enemyFound) {
-                        Position position = this.doStep();
-                        this.roadMap[position.x][position.y] = 1;
-                        enemyFound = this.updateCalculations(field, position, field.exit);
-
-                        if (this.aStarCalculations[field.exit.x][field.exit.y][0] < 10000) {
-                            exitFound = true;
-                        }
-                    }
-                    if (!enemyFound) {
-                        this.findShortestPathAndGo(field, field.exit, shortestWay);
-                    } else {
-                        this.checkAndPrint(field);
-                    }
+                    this.goTo(this.field.exit);
                 }
             } else if (this.hp.hasBook) {
                 if (this.hp.position.equals(field.exit)) {
                     this.hp.endgame = true;
                     System.out.println("YOU WON");
                 } else {
-                    this.aStarCalculations[this.hp.position.x][this.hp.position.y][0] = 0;
-                    this.aStarCalculations[this.hp.position.x][this.hp.position.y][1] =
-                            Math.abs(field.exit.x - this.hp.position.x) + Math.abs(field.exit.y - this.hp.position.y);
-
-                    shortestWay = new LinkedList<>();
-                    boolean exitFound = false;
-                    this.updateCalculations(field, this.hp.position, field.exit);
-                    this.roadMap[this.hp.position.x][this.hp.position.y] = 1;
-
-                    while (!exitFound && !enemyFound) {
-                        Position position = this.doStep();
-                        this.roadMap[position.x][position.y] = 1;
-                        enemyFound = this.updateCalculations(field, position, field.exit);
-
-                        if (this.aStarCalculations[field.exit.x][field.exit.y][0] < 10000) {
-                            exitFound = true;
-                        }
-                    }
-                    if (!enemyFound) {
-                        this.findShortestPathAndGo(field, field.exit, shortestWay);
-                    } else {
-                        this.checkAndPrint(field);
-                    }
+                    this.goTo(this.field.exit);
                 }
             } else {
                 Position target = this.closestUnknown();
-
-                this.aStarCalculations[this.hp.position.x][this.hp.position.y][0] = 0;
-                this.aStarCalculations[this.hp.position.x][this.hp.position.y][1] =
-                        Math.abs(target.x - this.hp.position.x) + Math.abs(target.y - this.hp.position.y);
-
-                shortestWay = new LinkedList<>();
-                this.updateCalculations(field, this.hp.position, target);
-                this.roadMap[this.hp.position.x][this.hp.position.y] = 1;
-
-                while (!enemyFound) {
-                    Position position = this.doStep();
-                    this.roadMap[position.x][position.y] = 1;
-                    if (this.aStarCalculations[target.x][target.y][0] < 10000) {
-                        break;
-                    }
-                    enemyFound = this.updateCalculations(field, position, target);
-                }
-                if (!enemyFound) {
-                    this.findShortestPathAndGo(field, target, shortestWay);
-                } else {
-                    this.checkAndPrint(field);
-                }
+                this.goTo(target);
             }
         }
+    }
+
+    private void goTo(Position target) {
+        LinkedList<Position> shortestWay = new LinkedList<>();
+        this.aStarCalculations[this.hp.position.x][this.hp.position.y][0] = 0;
+        this.aStarCalculations[this.hp.position.x][this.hp.position.y][1] =
+                Math.abs(target.x - this.hp.position.x) + Math.abs(target.y - this.hp.position.y);
+
+        this.updateCalculations(this.hp.position, target);
+        this.roadMap[this.hp.position.x][this.hp.position.y] = 1;
+
+        do {
+            Position position = this.doStep();
+            this.roadMap[position.x][position.y] = 1;
+            this.updateCalculations(position, target);
+        } while (this.aStarCalculations[target.x][target.y][0] >= 10000);
+        this.findShortestPathAndGo(field, target, shortestWay);
     }
 
     private void findShortestPathAndGo(Field field, Position target, LinkedList<Position> shortestWay) {
@@ -141,50 +90,51 @@ public class AStar extends Search {
         Position position = this.findPartOfShortestWay(target);
         while (!position.equals(this.hp.position)) {
 //            this.printCalculations();
-
             shortestWay.add(position);
             this.roadMap[position.x][position.y] = 1;
             position = this.findPartOfShortestWay(position);
         }
 
         for (int i = shortestWay.size() - 1; i >= 0; i--) {
-            this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
-            this.hp.position = shortestWay.get(i);
-            this.getItem();
-
-            this.checkAndPrint(field);
-//            this.step++;
+            position = shortestWay.get(i);
+            if (this.hp.memory[position.x][position.y].compareTo("F") == 0 ||
+                    this.hp.memory[position.x][position.y].compareTo("N") == 0 ||
+                    this.hp.memory[position.x][position.y].compareTo("f") == 0 ||
+                    this.hp.memory[position.x][position.y].compareTo("n") == 0) {
+                break;
+            } else {
+                this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
+                this.hp.position = position;
+                System.out.println("STEP " + (this.step + 1));
+                this.getItem();
+                this.checkAndPrint(field);
+            }
         }
     }
 
-    private boolean updateCalculations(Field field, Position current, Position target) {
+    private void updateCalculations(Position current, Position target) {
         int sum, heuristics, newSum, newHeuristics;
         for (int i = current.x - 1; i < current.x + 2; i++) {
             for (int j = current.y - 1; j < current.y + 2; j++) {
-                if (i > -1 && i < 9 && j > -1 && j < 9) {
-                    if (field.scheme[i][j].compareTo("n") != 0 && field.scheme[i][j].compareTo("f") != 0 &&
-                            field.scheme[i][j].compareTo("N") != 0 && field.scheme[i][j].compareTo("F") != 0) {
-                        heuristics = this.aStarCalculations[i][j][1];
-                        sum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1];
-                        newHeuristics = Math.abs(i - target.x) + Math.abs(j - target.y);
-                        newSum = newHeuristics + Math.max(Math.abs(i - current.x), Math.abs(j - current.y)) +
-                                this.aStarCalculations[current.x][current.y][0];
+                if (i > -1 && i < 9 && j > -1 && j < 9 && this.hp.memory[i][j].compareTo("F") != 0 &&
+                        this.hp.memory[i][j].compareTo("N") != 0 && this.hp.memory[i][j].compareTo("f") != 0 &&
+                        this.hp.memory[i][j].compareTo("n") != 0) {
+                    heuristics = this.aStarCalculations[i][j][1];
+                    sum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1];
+                    newHeuristics = Math.abs(i - target.x) + Math.abs(j - target.y);
+                    newSum = newHeuristics + Math.max(Math.abs(i - current.x), Math.abs(j - current.y)) +
+                            this.aStarCalculations[current.x][current.y][0];
 
-                        if (sum > newSum) {
-                            this.aStarCalculations[i][j][0] = Math.max(Math.abs(i - current.x), Math.abs(j - current.y)) +
-                                    this.aStarCalculations[current.x][current.y][0];
-                            this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
-                        } else if (sum == newSum && heuristics > newHeuristics) {
-                            this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
-                        }
-                    } else if (this.hp.memory[i][j].compareTo("·") == 0) {
-                        this.hp.memory[i][j] = field.scheme[i][j];
-                        return true;
+                    if (sum > newSum) {
+                        this.aStarCalculations[i][j][0] = Math.max(Math.abs(i - current.x), Math.abs(j - current.y)) +
+                                this.aStarCalculations[current.x][current.y][0];
+                        this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
+                    } else if (sum == newSum && heuristics > newHeuristics) {
+                        this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
                     }
                 }
             }
         }
-        return false;
     }
 
     private void restartCalculations() {
@@ -198,20 +148,13 @@ public class AStar extends Search {
     }
 
     private Position findPartOfShortestWay(Position position) {
-        int minSum = 10000;
         int minGain = 10000;
         int x = -1, y = -1;
 
         for (int i = position.x - 1; i < position.x + 2; i++) {
             for (int j = position.y - 1; j < position.y + 2; j++) {
                 if (i > -1 && i < 9 && j > -1 && j < 9 && this.roadMap[i][j] == 0) {
-                    if (this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1] < minSum) {
-                        minSum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1];
-                        minGain = this.aStarCalculations[i][j][0];
-                        x = i;
-                        y = j;
-                    } else if (this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1] == minSum &&
-                            minGain > this.aStarCalculations[i][j][0]) {
+                    if (minGain > this.aStarCalculations[i][j][0]) {
                         minGain = this.aStarCalculations[i][j][0];
                         x = i;
                         y = j;

@@ -47,28 +47,6 @@ public class Field {
         this.update();
     }
 
-    boolean inputCorrect() {
-        // check Harry
-        if (this.hp.position.x != 0 || this.hp.position.y != 0) {
-            System.out.println("Position of Harry is entered incorrectly. The program will be terminated.");
-            return false;
-        }
-        // inspectors are generated randomly
-        // check exit
-        if (this.exit.equals(this.mrFilch.position) || this.exit.equals(this.mrsNorris.position) ||
-                this.exit.equals(this.book.position)) {
-            System.out.println("Position of exit is entered incorrectly. The program will be terminated.");
-            return false;
-        }
-        // check book & cloak
-        if (this.mrFilch.seeItem(this.scheme) || this.mrsNorris.seeItem(this.scheme)) {
-            System.out.println("Position of the book or the cloak is entered incorrectly. The program will be terminated.");
-            return false;
-        }
-
-        return true;
-    }
-
     // with input
     void generateActors(String[][] coords) {
         Position position = new Position(Integer.parseInt(coords[0][0]), Integer.parseInt(coords[0][1]));

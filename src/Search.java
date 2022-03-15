@@ -36,13 +36,13 @@ public class Search {
     }
 
     protected boolean getItem() {
-        if (this.hp.position.equals(this.field.book.position)) {
+        if (!this.hp.hasBook && this.hp.position.equals(this.field.book.position)) {
             this.field.scheme[this.hp.position.x][this.hp.position.y] = "·";
             this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
             this.hp.hasBook = true;
             System.out.println("BOOK FOUND");
         }
-        if (this.hp.position.equals(this.field.cloak.position)) {
+        if (!this.hp.hasCloak && this.hp.position.equals(this.field.cloak.position)) {
             this.field.scheme[this.hp.position.x][this.hp.position.y] = "·";
             this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
             this.hp.hasCloak = true;
@@ -138,7 +138,6 @@ public class Search {
 
     protected void checkAndPrint(Field field) {
         this.step++;
-        System.out.println("STEP " + this.step);
 
         if (!this.hp.norrisFound) {
             this.hp.checkNorris(field);
@@ -153,7 +152,7 @@ public class Search {
         }
 
         try {
-            TimeUnit.MILLISECONDS.sleep(100);
+            TimeUnit.MILLISECONDS.sleep(0);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
