@@ -66,14 +66,26 @@ public class HarryPotter extends Person {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 if (this.memory[i][j].compareTo("N") == 0) {
-                    System.out.println("NORRIS FOUND");
                     this.norrisFound = true;
+                    System.out.println("NORRIS FOUND");
+
+                    if (!this.hasCloak) {
+                        for (int i1 = x - 1; i1 < x + 2; i1++) {
+                            for (int j1 = y - 1; j1 < y + 2; j1++) {
+                                if (Position.correct(i1, j1)) {
+                                    this.memory[i1][j1] = "n";
+                                }
+                            }
+                        }
+                        this.memory[x][y] = "N";
+                    }
                     return;
                 } else if (this.memory[i][j].compareTo("n") == 0) {
                     count++;
                 }
                 if (count > 3) {
                     this.norrisFound = true;
+
                     System.out.println("NORRIS FOUND");
                     for (int i1 = x - 1; i1 < x + 2; i1++) {
                         for (int j1 = y - 1; j1 < y + 2; j1++) {
@@ -99,8 +111,20 @@ public class HarryPotter extends Person {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 if (this.memory[i][j].compareTo("F") == 0) {
-                    System.out.println("FILCH FOUND");
                     this.filchFound = true;
+
+                    System.out.println("FILCH FOUND");
+
+                    if (!this.hasCloak) {
+                        for (int i1 = x - 2; i1 < x + 3; i1++) {
+                            for (int j1 = y - 2; j1 < y + 3; j1++) {
+                                if (Position.correct(i1, j1)) {
+                                    this.memory[i1][j1] = "f";
+                                }
+                            }
+                        }
+                        this.memory[x][y] = "F";
+                    }
                     return;
                 } else if (this.memory[i][j].compareTo("f") == 0) {
                     count++;
@@ -108,6 +132,7 @@ public class HarryPotter extends Person {
                 if (count > 5) {
                     this.filchFound = true;
                     System.out.println("FILCH FOUND");
+
                     for (int i1 = x - 2; i1 < x + 3; i1++) {
                         for (int j1 = y - 2; j1 < y + 3; j1++) {
                             if (Position.correct(i1, j1)) {

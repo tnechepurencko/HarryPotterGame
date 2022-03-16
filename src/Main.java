@@ -1,5 +1,21 @@
 import java.util.Scanner;
-
+/*
+coordinates examples:
+2
+1
+[0,0] [0,5] [6,3] [7,5] [0,8] [3,5]
+1
+[0,0] [4,2] [7,3] [7,5] [0,8] [3,5]
+1
+[0,0] [4,2] [7,3] [7,5] [8,1] [8,0]
+1
+[0,0] [0,5] [6,3] [0,8] [3,5] [3,5]
+1
+[0,0] [1,4] [5,3] [5,1] [7,5] [7,5]
+1
+[0,0] [1,4] [5,3] [0,0] [7,5] [7,5]
+1
+ */
 public class Main {
     static Scanner scanner = new Scanner(System.in);
 
@@ -51,6 +67,7 @@ public class Main {
         for (int i = 0; i < backtracking.path.size(); i++) {
             System.out.print("[" + backtracking.path.get(i).x + "," + backtracking.path.get(i).y + "] ");
         }
+        System.out.println(".\nRUNTIME (WITH PRINT TIME): " + backtracking.runtime + " ms.");
 
         System.out.println("\n");
         System.out.print("HARRY " + aStar.result + " THE GAME TAKING " + aStar.step +
@@ -58,6 +75,7 @@ public class Main {
         for (int i = 0; i < aStar.path.size(); i++) {
             System.out.print("[" + aStar.path.get(i).x + "," + aStar.path.get(i).y + "] ");
         }
+        System.out.println(".\nRUNTIME: (WITH PRINT TIME)" + aStar.runtime + " ms.");
     }
 
     static String[][] enterCoords() {

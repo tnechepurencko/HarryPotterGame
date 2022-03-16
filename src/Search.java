@@ -1,11 +1,11 @@
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class Search {
     protected HarryPotter hp;
     protected int[][] BDFirstSearch;
     Field field;
+    long runtime;
     int step;
     String result;
     LinkedList<Position> path;
@@ -15,6 +15,7 @@ public class Search {
         this.field = field;
         this.generateBDFirstSearch();
         this.path = new LinkedList<>();
+        this.runtime = 0;
         this.step = 0;
         this.result = "LOSE";
     }
@@ -44,12 +45,14 @@ public class Search {
             this.field.scheme[this.hp.position.x][this.hp.position.y] = "·";
             this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
             this.hp.hasBook = true;
+
             System.out.println("BOOK FOUND");
         }
         if (!this.hp.hasCloak && this.hp.position.equals(this.field.cloak.position)) {
             this.field.scheme[this.hp.position.x][this.hp.position.y] = "·";
             this.hp.memory[this.hp.position.x][this.hp.position.y] = "·";
             this.hp.hasCloak = true;
+
             System.out.println("CLOAK FOUND");
 
             this.field.mrFilch.perception = 0;
@@ -136,7 +139,6 @@ public class Search {
 
     protected void checkAndPrint() {
         this.step++;
-
         if (!this.hp.norrisFound) {
             this.hp.checkNorris();
         }
@@ -147,12 +149,6 @@ public class Search {
         this.hp.updateMemory();
         if (this.boundedAreaExists()) {
             System.out.println("BOUNDED AREA FOUND");
-        }
-
-        try {
-            TimeUnit.MILLISECONDS.sleep(0);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
         System.out.println("Memory:");

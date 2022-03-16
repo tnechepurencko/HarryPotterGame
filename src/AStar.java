@@ -26,10 +26,11 @@ public class AStar extends Search {
 
     public void search(Field field) {
         System.out.println("\nA_STAR SEARCH");
+        long startTime = System.currentTimeMillis();
         this.field.newGame();
         this.getItem();
-        this.path.add(this.hp.position.copy());
 
+        this.path.add(this.hp.position.copy());
         while (!this.hp.endgame) {
             this.restartCalculations();
             this.restartRoadMap();
@@ -62,6 +63,7 @@ public class AStar extends Search {
                 this.goTo(target);
             }
         }
+        this.runtime = System.currentTimeMillis() - startTime;
     }
 
     private void goTo(Position target) {
@@ -78,6 +80,7 @@ public class AStar extends Search {
             this.roadMap[position.x][position.y] = 1;
             this.updateCalculations(position, target);
         } while (this.aStarCalculations[target.x][target.y][0] >= 10000);
+
         this.findShortestPathAndGo(target, shortestWay);
     }
 
@@ -101,6 +104,7 @@ public class AStar extends Search {
                 this.hp.position = position;
                 this.path.add(position);
 
+                System.out.println("STEP " + (this.step + 1));
                 System.out.println("STEP " + (this.step + 1));
                 this.getItem();
                 this.checkAndPrint();

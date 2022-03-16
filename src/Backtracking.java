@@ -10,10 +10,11 @@ public class Backtracking extends Search {
 
     public void search(Field field) {
         System.out.println("\nBACKTRACKING SEARCH");
+        long startTime = System.currentTimeMillis();
         this.field.newGame();
         this.getItem();
-        this.path.add(this.hp.position.copy());
 
+        this.path.add(this.hp.position.copy());
         this.hp.updateMemory();
         Stack<Position> stack = new Stack<>();
         stack.push(this.hp.position.copy());
@@ -51,6 +52,7 @@ public class Backtracking extends Search {
                 this.goTo(position, stack);
             }
         }
+        this.runtime = System.currentTimeMillis() - startTime;
     }
 
     private void backtrack(Stack<Position> stack) {
@@ -97,8 +99,8 @@ public class Backtracking extends Search {
     private void goTo(Position target, Stack<Position> stack) {
         LinkedList<Position[]> shortestWay = new LinkedList<>();
         Queue<Position[]> queue = new LinkedList<>();
-        this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
 
+        this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
         this.updateBDFirstSearch();
         Position[] p = {this.hp.position, this.hp.position};
         queue.add(p);
@@ -113,7 +115,9 @@ public class Backtracking extends Search {
                 this.path.add(newPos);
 
                 System.out.println("STEP " + (this.step + 1));
-                if (this.getItem()) {
+
+                boolean gotItem = this.getItem();
+                if (gotItem) {
                     this.markUsefulRoute(stack);
                 }
                 stack.push(this.hp.position.copy());
