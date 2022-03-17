@@ -20,6 +20,10 @@ public class Backtracking extends Search {
         stack.push(this.hp.position.copy());
 
         while (!this.hp.endgame) {
+            if (this.step == 6) {
+                int bp = 123456;
+            }
+
             if (this.harryCaught()) {
                 this.hp.endgame = true;
                 System.out.println("YOU LOSE: HARRY WAS CAUGHT.");
@@ -100,7 +104,7 @@ public class Backtracking extends Search {
         LinkedList<Position[]> shortestWay = new LinkedList<>();
         Queue<Position[]> queue = new LinkedList<>();
 
-        this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
+//        this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
         this.updateBDFirstSearch();
         Position[] p = {this.hp.position, this.hp.position};
         queue.add(p);

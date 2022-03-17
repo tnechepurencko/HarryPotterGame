@@ -5,6 +5,8 @@ coordinates examples:
 1
 [0,0] [0,5] [6,3] [7,5] [0,8] [3,5]
 1
+2
+1
 [0,0] [4,2] [7,3] [7,5] [0,8] [3,5]
 1
 [0,0] [4,2] [7,3] [7,5] [8,1] [8,0]
@@ -23,6 +25,7 @@ public class Main {
 
         // TODO le нюанс: у котика красные глаза, у филча свечка, поэтому гарри их различает в библиотеке
         // TODO check 2nd scenario
+        // TODO backtracking: if H was near useful cell, backtrack and go with faster way
 
         System.out.println("Do you wand to set positions of agents manually? (1-yes, 2-no)");
         String input = scanner.nextLine();

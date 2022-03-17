@@ -42,8 +42,8 @@ public class Field {
 
     void newGame() {
         this.hp.updateHarry();
-        this.mrFilch.perception = 2;
-        this.mrsNorris.perception = 1;
+        this.mrFilch.currentPerception = 2;
+        this.mrsNorris.currentPerception = 1;
         this.update();
     }
 
@@ -130,8 +130,8 @@ public class Field {
     }
 
     void generatePerception(Inspector inspector) {
-        for (int i = inspector.position.x - inspector.perception; i < inspector.position.x + inspector.perception+ 1; i++) {
-            for (int j = inspector.position.y - inspector.perception; j < inspector.position.y + inspector.perception + 1; j++) {
+        for (int i = inspector.position.x - inspector.currentPerception; i < inspector.position.x + inspector.currentPerception + 1; i++) {
+            for (int j = inspector.position.y - inspector.currentPerception; j < inspector.position.y + inspector.currentPerception + 1; j++) {
                 if (Position.correct(i, j)) {
                     this.scheme[i][j] = inspector.symbol.toLowerCase(Locale.ROOT);
                 }

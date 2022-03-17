@@ -68,33 +68,15 @@ public class HarryPotter extends Person {
                 if (this.memory[i][j].compareTo("N") == 0) {
                     this.norrisFound = true;
                     System.out.println("NORRIS FOUND");
-
-                    if (!this.hasCloak) {
-                        for (int i1 = x - 1; i1 < x + 2; i1++) {
-                            for (int j1 = y - 1; j1 < y + 2; j1++) {
-                                if (Position.correct(i1, j1)) {
-                                    this.memory[i1][j1] = "n";
-                                }
-                            }
-                        }
-                        this.memory[x][y] = "N";
-                    }
+                    inspectorFound(this.field.mrsNorris);
                     return;
                 } else if (this.memory[i][j].compareTo("n") == 0) {
                     count++;
                 }
                 if (count > 3) {
                     this.norrisFound = true;
-
                     System.out.println("NORRIS FOUND");
-                    for (int i1 = x - 1; i1 < x + 2; i1++) {
-                        for (int j1 = y - 1; j1 < y + 2; j1++) {
-                            if (Position.correct(i1, j1)) {
-                                this.memory[i1][j1] = "n";
-                            }
-                        }
-                    }
-                    this.memory[x][y] = "N";
+                    inspectorFound(this.field.mrsNorris);
                     return;
                 }
             }
@@ -112,19 +94,8 @@ public class HarryPotter extends Person {
             for (int j = 0; j < 9; j++) {
                 if (this.memory[i][j].compareTo("F") == 0) {
                     this.filchFound = true;
-
                     System.out.println("FILCH FOUND");
-
-                    if (!this.hasCloak) {
-                        for (int i1 = x - 2; i1 < x + 3; i1++) {
-                            for (int j1 = y - 2; j1 < y + 3; j1++) {
-                                if (Position.correct(i1, j1)) {
-                                    this.memory[i1][j1] = "f";
-                                }
-                            }
-                        }
-                        this.memory[x][y] = "F";
-                    }
+                    this.inspectorFound(this.field.mrFilch);
                     return;
                 } else if (this.memory[i][j].compareTo("f") == 0) {
                     count++;
@@ -132,19 +103,28 @@ public class HarryPotter extends Person {
                 if (count > 5) {
                     this.filchFound = true;
                     System.out.println("FILCH FOUND");
-
-                    for (int i1 = x - 2; i1 < x + 3; i1++) {
-                        for (int j1 = y - 2; j1 < y + 3; j1++) {
-                            if (Position.correct(i1, j1)) {
-                                this.memory[i1][j1] = "f";
-                            }
-                        }
-                    }
-                    this.memory[x][y] = "F";
+                    inspectorFound(this.field.mrFilch);
                     return;
                 }
             }
         }
+    }
+
+    private void inspectorFound(Inspector i) {
+        for (int i1 = i.position.x - i.staticPerception; i1 < i.position.x + 1 + i.staticPerception; i1++) {
+            for (int j1 = i.position.y - i.staticPerception; j1 < i.position.y + 1 + i.staticPerception; j1++) {
+                if (Position.correct(i1, j1)) {
+                    if (this.hasCloak) {
+                        if (this.position.x != i1 || this.position.y != j1) {
+                            this.memory[i1][j1] = "+";
+                        }
+                    } else {
+                        this.memory[i1][j1] = i.symbol.toLowerCase();
+                    }
+                }
+            }
+        }
+        this.memory[i.position.x][i.position.y] = i.symbol;
     }
 
     /**
@@ -167,12 +147,24 @@ public class HarryPotter extends Person {
             int i, j;
             for (i = this.position.x - 1; i < this.position.x + 2; i++) {
                 j = this.position.y - 2;
-                if (i > -1 && i < 9 && j > -1) {
+                if (Position.correct(i, j)) {
                     this.memorizeEnemy(i, j);
                 }
 
-                j = this.position.y + 3;
-                if (i > -1 && i < 9 && j < 9) {
+                j = this.position.y + 2;
+                if (Position.correct(i, j)) {
+                    this.memorizeEnemy(i, j);
+                }
+            }
+
+            for (j = this.position.y - 1; j < this.position.y + 2; j++) {
+                i = this.position.x - 2;
+                if (Position.correct(i, j)) {
+                    this.memorizeEnemy(i, j);
+                }
+
+                i = this.position.x + 2;
+                if (Position.correct(i, j)) {
                     this.memorizeEnemy(i, j);
                 }
             }

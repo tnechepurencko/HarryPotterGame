@@ -105,7 +105,6 @@ public class AStar extends Search {
                 this.path.add(position);
 
                 System.out.println("STEP " + (this.step + 1));
-                System.out.println("STEP " + (this.step + 1));
                 this.getItem();
                 this.checkAndPrint();
             }

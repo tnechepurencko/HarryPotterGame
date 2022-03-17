@@ -55,13 +55,17 @@ public class Search {
 
             System.out.println("CLOAK FOUND");
 
-            this.field.mrFilch.perception = 0;
-            this.field.mrsNorris.perception = 0;
+            this.field.mrFilch.currentPerception = 0;
+            this.field.mrsNorris.currentPerception = 0;
             for (int i = 0; i < 9; i++) {
                 for (int j = 0; j < 9; j++) {
                     if (this.field.scheme[i][j].compareTo("n") == 0 || this.field.scheme[i][j].compareTo("f") == 0) {
+                        if ((this.hp.norrisFound && this.field.scheme[i][j].compareTo("n") == 0) ||
+                                (this.hp.filchFound && this.field.scheme[i][j].compareTo("f") == 0) ||
+                                (this.hp.memory[i][j].compareTo("n") == 0) || (this.hp.memory[i][j].compareTo("f") == 0)) {
+                            this.hp.memory[i][j] = "+";
+                        }
                         this.field.scheme[i][j] = "·";
-                        this.hp.memory[i][j] = "·";
                     }
                 }
             }
@@ -113,9 +117,7 @@ public class Search {
             for (int j = 0; j < 9; j++) {
                 if (this.BDFirstSearch[i][j] == 0 && this.hp.memory[i][j].compareTo("b") != 0) {
                     ans = true;
-                    if (this.hp.notEnemy(i, j)) {
-                        this.hp.memory[i][j] = "b";
-                    }
+                    this.hp.memory[i][j] = "b";
                 }
             }
         }
@@ -139,6 +141,8 @@ public class Search {
 
     protected void checkAndPrint() {
         this.step++;
+        this.hp.updateMemory();
+
         if (!this.hp.norrisFound) {
             this.hp.checkNorris();
         }
@@ -146,7 +150,6 @@ public class Search {
             this.hp.checkFilch();
         }
 
-        this.hp.updateMemory();
         if (this.boundedAreaExists()) {
             System.out.println("BOUNDED AREA FOUND");
         }
