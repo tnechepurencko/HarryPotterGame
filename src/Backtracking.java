@@ -12,10 +12,11 @@ public class Backtracking extends Search {
         System.out.println("\nBACKTRACKING SEARCH");
         long startTime = System.currentTimeMillis();
         this.field.newGame();
+        this.hp.updateMemory();
         this.getItem();
 
         this.path.add(this.hp.position.copy());
-        this.hp.updateMemory();
+//        this.hp.updateMemory();
         Stack<Position> stack = new Stack<>();
         stack.push(this.hp.position.copy());
 
@@ -100,15 +101,15 @@ public class Backtracking extends Search {
         return false;
     }
 
-    private void goTo(Position target, Stack<Position> stack) {
+    private void goTo(Position target, Stack<Position> stack) { //TODO
         LinkedList<Position[]> shortestWay = new LinkedList<>();
         Queue<Position[]> queue = new LinkedList<>();
 
-//        this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
         this.updateBDFirstSearch();
         Position[] p = {this.hp.position, this.hp.position};
         queue.add(p);
 
+        this.generateFear();
         this.findShortestWay(target, shortestWay, queue);
 
         for (int i = shortestWay.size() - 2; i > -1; i--) {
@@ -135,6 +136,7 @@ public class Backtracking extends Search {
     private boolean findShortestWay(Position target, LinkedList<Position[]> shortestWay, Queue<Position[]> queue) {
         if (!queue.isEmpty()) {
             Position[] positions = queue.poll();
+            this.updateFear(positions[0]);
             if (positions[0].equals(target)) {
                 Position[] p = {positions[0].copy(), positions[1].copy()};
                 shortestWay.add(p);
@@ -143,7 +145,8 @@ public class Backtracking extends Search {
                 this.BDFirstSearch[positions[0].x][positions[0].y] = 1;
                 for (Position delta: DELTAS) {
                     Position newPos = positions[0].sum(delta);
-                    if (newPos.correct() && this.BDFirstSearch[newPos.x][newPos.y] == 0 && this.hp.notEnemy(newPos)) {
+                    if (newPos.correct() && this.noFear(newPos) &&
+                            this.BDFirstSearch[newPos.x][newPos.y] == 0 && this.hp.notEnemy(newPos)) {
                         Position[] p = {newPos.copy(), positions[0].copy()};
                         queue.add(p);
                         this.BDFirstSearch[newPos.x][newPos.y] = 1;

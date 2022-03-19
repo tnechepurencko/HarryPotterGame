@@ -2,9 +2,9 @@ import java.util.Scanner;
 /*
 coordinates examples:
 2
+2
 1
 [0,0] [0,5] [6,3] [7,5] [0,8] [3,5]
-1
 2
 1
 [0,0] [4,2] [7,3] [7,5] [0,8] [3,5]
@@ -17,6 +17,11 @@ coordinates examples:
 1
 [0,0] [1,4] [5,3] [0,0] [7,5] [7,5]
 1
+[0,0] [3,1] [8,6] [2,5] [5,8] [7,2]
+1
+backtrack stuff:
+[0,0] [3,1] [2,2] [8,8] [1,6] [6,6]
+2
  */
 public class Main {
     static Scanner scanner = new Scanner(System.in);

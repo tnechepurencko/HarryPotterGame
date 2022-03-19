@@ -26,6 +26,10 @@ public class Position {
         return this.x == p.x && this.y == p.y;
     }
 
+    boolean equals(int x, int y) {
+        return this.x == x && this.y == y;
+    }
+
     /**
      * @return a copy of the current position.
      */

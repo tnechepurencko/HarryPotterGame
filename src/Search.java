@@ -4,6 +4,7 @@ import java.util.List;
 public class Search {
     protected HarryPotter hp;
     protected int[][] BDFirstSearch;
+    protected int[][] fear; // 1-yes, 2-no, 0-unknown
     Field field;
     long runtime;
     int step;
@@ -14,6 +15,10 @@ public class Search {
         this.hp = hp;
         this.field = field;
         this.generateBDFirstSearch();
+
+        this.fear = new int[9][9];
+        this.generateFear();
+
         this.path = new LinkedList<>();
         this.runtime = 0;
         this.step = 0;
@@ -32,12 +37,74 @@ public class Search {
         this.updateBDFirstSearch();
     }
 
+    void generateFear() {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (this.fear[i][j] != 2) {
+                    this.fear[i][j] = 0;
+                }
+            }
+        }
+    }
+
     void updateBDFirstSearch() {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 this.BDFirstSearch[i][j] = 0;
             }
         }
+    }
+
+    void updateFear(Position position) {
+        if (this.hp.scenario == 2) {
+            List<Position> deltas = List.of(new Position(-1, 0), new Position(0, -1),
+                    new Position(1, 0), new Position(0, 1));
+            Position maybeInspector;
+            Position near;
+            for (Position delta0 : DELTAS) {
+                near = position.sum(delta0);
+                if (near.correct()) {
+                    for (Position delta1 : deltas) {
+                        maybeInspector = near.sum(delta1);
+                        if (maybeInspector.correct() && !maybeInspector.equals(position) && this.fear[near.x][near.y] != 2 &&
+                                (this.hp.memory[maybeInspector.x][maybeInspector.y].compareTo("f") == 0 ||
+                                this.hp.memory[maybeInspector.x][maybeInspector.y].compareTo("n") == 0)) {
+                            this.fear[near.x][near.y] = 1;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            int i, j;
+            for (i = position.x - 1; i <position.x + 2; i++) {
+                j = position.y - 2;
+                if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
+                    this.fear[i][j] = 2;
+                }
+
+                j = position.y + 2;
+                if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
+                    this.fear[i][j] = 2;
+                }
+            }
+
+            for (j = position.y - 1; j < position.y + 2; j++) {
+                i = position.x - 2;
+                if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
+                    this.fear[i][j] = 2;
+                }
+
+                i = position.x + 2;
+                if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
+                    this.fear[i][j] = 2;
+                }
+            }
+        }
+    }
+
+    protected boolean noFear(Position position) {
+        return this.fear[position.x][position.y] != 1;
     }
 
     protected boolean getItem() {
@@ -69,6 +136,8 @@ public class Search {
                     }
                 }
             }
+            this.hp.memory[this.field.mrFilch.position.x][this.field.mrFilch.position.y] = "F";
+            this.hp.memory[this.field.mrsNorris.position.x][this.field.mrsNorris.position.y] = "N";
         } else {
             return false;
         }
@@ -128,10 +197,9 @@ public class Search {
         for (int radius = 1; radius < 8; radius++) {
             for (int i = this.hp.position.x - radius; i < this.hp.position.x + radius + 1; i++) {
                 for (int j = this.hp.position.y - radius; j < this.hp.position.y + radius + 1; j++) {
-                    if (Position.correct(i, j)) {
-                        if (this.hp.memory[i][j].compareTo("·") == 0) {
-                            return new Position(i, j);
-                        }
+                    if (Position.correct(i, j) && this.hp.memory[i][j].compareTo("·") == 0 &&
+                            !this.hp.afraidOfFilch(new Position(i, j))) {
+                        return new Position(i, j);
                     }
                 }
             }

@@ -28,6 +28,7 @@ public class AStar extends Search {
         System.out.println("\nA_STAR SEARCH");
         long startTime = System.currentTimeMillis();
         this.field.newGame();
+        this.hp.updateMemory();
         this.getItem();
 
         this.path.add(this.hp.position.copy());
@@ -48,6 +49,7 @@ public class AStar extends Search {
                 if (this.hp.position.equals(field.exit)) {
                     this.hp.exitChecked = true;
                 } else {
+                    this.generateFear();
                     this.goTo(this.field.exit);
                 }
             } else if (this.hp.hasBook) {
@@ -56,10 +58,12 @@ public class AStar extends Search {
                     this.result = "WON";
                     System.out.println("YOU WON");
                 } else {
+                    this.generateFear();
                     this.goTo(this.field.exit);
                 }
             } else {
                 Position target = this.closestUnknown();
+                this.generateFear();
                 this.goTo(target);
             }
         }
@@ -72,12 +76,14 @@ public class AStar extends Search {
         this.aStarCalculations[this.hp.position.x][this.hp.position.y][1] =
                 Math.abs(target.x - this.hp.position.x) + Math.abs(target.y - this.hp.position.y);
 
+        this.updateFear(this.hp.position);
         this.updateCalculations(this.hp.position, target);
         this.roadMap[this.hp.position.x][this.hp.position.y] = 1;
 
         do {
             Position position = this.doStep();
             this.roadMap[position.x][position.y] = 1;
+            this.updateFear(position);
             this.updateCalculations(position, target);
         } while (this.aStarCalculations[target.x][target.y][0] >= 10000);
 
@@ -115,7 +121,7 @@ public class AStar extends Search {
         int sum, heuristics, newSum, newHeuristics;
         for (int i = current.x - 1; i < current.x + 2; i++) {
             for (int j = current.y - 1; j < current.y + 2; j++) {
-                if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
+                if (Position.correct(i, j) && this.hp.notEnemy(i, j) && this.noFear(new Position(i, j))) {
                     heuristics = this.aStarCalculations[i][j][1];
                     sum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1];
                     newHeuristics = Math.abs(i - target.x) + Math.abs(j - target.y);
@@ -146,6 +152,7 @@ public class AStar extends Search {
 
     private Position findPartOfShortestWay(Position position) {
         int minGain = 10000;
+        int minHeuristics = 10000;
         int x = -1, y = -1;
 
         for (int i = position.x - 1; i < position.x + 2; i++) {
@@ -153,6 +160,11 @@ public class AStar extends Search {
                 if (Position.correct(i, j) && this.roadMap[i][j] == 0) {
                     if (minGain > this.aStarCalculations[i][j][0]) {
                         minGain = this.aStarCalculations[i][j][0];
+                        minHeuristics = this.aStarCalculations[i][j][1];
+                        x = i;
+                        y = j;
+                    } else if (minGain == this.aStarCalculations[i][j][0] && minHeuristics > this.aStarCalculations[i][j][1]) {
+                        minHeuristics = this.aStarCalculations[i][j][1];
                         x = i;
                         y = j;
                     }
