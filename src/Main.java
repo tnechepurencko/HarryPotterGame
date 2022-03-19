@@ -22,6 +22,9 @@ coordinates examples:
 backtrack stuff:
 [0,0] [3,1] [2,2] [8,8] [1,6] [6,6]
 2
+1
+[0,0] [1,5] [7,4] [4,0] [0,8] [6,6]
+2
  */
 public class Main {
     static Scanner scanner = new Scanner(System.in);

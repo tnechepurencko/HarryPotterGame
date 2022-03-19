@@ -21,7 +21,7 @@ public class Backtracking extends Search {
         stack.push(this.hp.position.copy());
 
         while (!this.hp.endgame) {
-            if (this.step == 6) {
+            if (this.step == 2) {
                 int bp = 123456;
             }
 

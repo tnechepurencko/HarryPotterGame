@@ -66,7 +66,8 @@ public class Search {
                 if (near.correct()) {
                     for (Position delta1 : deltas) {
                         maybeInspector = near.sum(delta1);
-                        if (maybeInspector.correct() && !maybeInspector.equals(position) && this.fear[near.x][near.y] != 2 &&
+                        if (maybeInspector.correct() && !maybeInspector.equals(position) &&
+                                this.fear[near.x][near.y] != 2 &&
                                 (this.hp.memory[maybeInspector.x][maybeInspector.y].compareTo("f") == 0 ||
                                 this.hp.memory[maybeInspector.x][maybeInspector.y].compareTo("n") == 0)) {
                             this.fear[near.x][near.y] = 1;
@@ -79,24 +80,24 @@ public class Search {
             int i, j;
             for (i = position.x - 1; i <position.x + 2; i++) {
                 j = position.y - 2;
-                if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
+                if (Position.correct(i, j) && this.field.notEnemy(i, j)) {
                     this.fear[i][j] = 2;
                 }
 
                 j = position.y + 2;
-                if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
+                if (Position.correct(i, j) && this.field.notEnemy(i, j)) {
                     this.fear[i][j] = 2;
                 }
             }
 
             for (j = position.y - 1; j < position.y + 2; j++) {
                 i = position.x - 2;
-                if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
+                if (Position.correct(i, j) && this.field.notEnemy(i, j)) {
                     this.fear[i][j] = 2;
                 }
 
                 i = position.x + 2;
-                if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
+                if (Position.correct(i, j) && this.field.notEnemy(i, j)) {
                     this.fear[i][j] = 2;
                 }
             }
@@ -198,7 +199,7 @@ public class Search {
             for (int i = this.hp.position.x - radius; i < this.hp.position.x + radius + 1; i++) {
                 for (int j = this.hp.position.y - radius; j < this.hp.position.y + radius + 1; j++) {
                     if (Position.correct(i, j) && this.hp.memory[i][j].compareTo("·") == 0 &&
-                            !this.hp.afraidOfFilch(new Position(i, j))) {
+                            (!this.hp.afraidOfFilch(new Position(i, j)) || this.fear[i][j] == 2)) {
                         return new Position(i, j);
                     }
                 }
