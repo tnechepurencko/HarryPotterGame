@@ -177,7 +177,7 @@ public class AStar extends Search {
                             this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
                         }
                     }
-                } else if (Position.correct(i, j)) {
+                } else if (Position.correct(i, j) && this.hp.notEnemy(i, j)) {
                     heuristics = this.aStarCalculations[i][j][1];
                     sum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1] + 1000;
                     newHeuristics = Math.abs(i - target.x) + Math.abs(j - target.y);

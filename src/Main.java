@@ -31,6 +31,9 @@ backtrack stuff:
 1
 [0,0] [2,4] [3,0] [8,8] [7,7] [6,6]
 2
+1
+[0,0] [2,7] [1,2] [1,0] [7,7] [6,6]
+2
  */
 public class Main {
     static Scanner scanner = new Scanner(System.in);
@@ -38,7 +41,6 @@ public class Main {
     public static void main(String[] args) {
 
         // TODO le нюанс: у котика красные глаза, у филча свечка, поэтому гарри их различает в библиотеке
-        // TODO check 2nd scenario
         // TODO backtracking: if H was near useful cell, backtrack and go with faster way
 
         System.out.println("Do you wand to set positions of agents manually? (1-yes, 2-no)");

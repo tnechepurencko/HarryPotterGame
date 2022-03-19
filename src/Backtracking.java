@@ -101,7 +101,7 @@ public class Backtracking extends Search {
         return false;
     }
 
-    private void goTo(Position target, Stack<Position> stack) { //TODO
+    private void goTo(Position target, Stack<Position> stack) {
         LinkedList<Position[]> shortestWay = new LinkedList<>();
         Queue<Position[]> queue = new LinkedList<>();
 
