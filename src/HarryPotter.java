@@ -113,7 +113,7 @@ public class HarryPotter extends Person {
     private void inspectorFound(Inspector i) {
         for (int i1 = i.position.x - i.staticPerception; i1 < i.position.x + 1 + i.staticPerception; i1++) {
             for (int j1 = i.position.y - i.staticPerception; j1 < i.position.y + 1 + i.staticPerception; j1++) {
-                if (Position.correct(i1, j1)) {
+                if (Position.correct(i1, j1) && !this.position.equals(i1, j1)) {
                     if (this.hasCloak) {
                         if ((this.position.x != i1 || this.position.y != j1) &&
                                 (!this.field.mrFilch.position.equals(i1, j1) &&
@@ -240,7 +240,7 @@ public class HarryPotter extends Person {
                 }
             }
         }
-
+        this.findInspectorCells();
         this.memory[this.position.x][this.position.y] = "H";
     }
 

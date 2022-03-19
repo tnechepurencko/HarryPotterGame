@@ -219,7 +219,7 @@ public class Search {
             this.hp.checkFilch();
         }
 
-        if (this.boundedAreaExists()) {
+        if (!this.harryCaught() && this.boundedAreaExists()) {
             System.out.println("BOUNDED AREA FOUND");
         }
 

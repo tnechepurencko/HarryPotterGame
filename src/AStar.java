@@ -90,6 +90,17 @@ public class AStar extends Search {
         this.findShortestPathAndGo(target, shortestWay);
     }
 
+    private void goToDangerousArea(LinkedList<Position> shortestWay) {
+        Position position = shortestWay.get(shortestWay.size() - 1);
+        this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
+        this.hp.position = position;
+        this.path.add(position);
+
+        System.out.println("STEP " + (this.step + 1));
+        this.getItem();
+        this.checkAndPrint();
+    }
+
     private void findShortestPathAndGo(Position target, LinkedList<Position> shortestWay) {
         this.restartRoadMap();
         shortestWay.add(target);
@@ -99,6 +110,11 @@ public class AStar extends Search {
             shortestWay.add(position);
             this.roadMap[position.x][position.y] = 1;
             position = this.findPartOfShortestWay(position);
+        }
+
+        if (this.aStarCalculations[shortestWay.get(shortestWay.size() - 1).x][shortestWay.get(shortestWay.size() - 1).y][0] > 1000) {
+            this.goToDangerousArea(shortestWay);
+            return;
         }
 
         for (int i = shortestWay.size() - 1; i >= 0; i--) {
@@ -113,39 +129,6 @@ public class AStar extends Search {
                 System.out.println("STEP " + (this.step + 1));
                 this.getItem();
                 this.checkAndPrint();
-            }
-        }
-    }
-
-    private void updateCalculations(Position current, Position target) {
-        int sum, heuristics, newSum, newHeuristics;
-        for (int i = current.x - 1; i < current.x + 2; i++) {
-            for (int j = current.y - 1; j < current.y + 2; j++) {
-                if (Position.correct(i, j) && this.hp.notEnemy(i, j) && this.noFear(new Position(i, j))) {
-                    heuristics = this.aStarCalculations[i][j][1];
-                    sum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1];
-                    newHeuristics = Math.abs(i - target.x) + Math.abs(j - target.y);
-                    newSum = newHeuristics + Math.max(Math.abs(i - current.x), Math.abs(j - current.y)) +
-                            this.aStarCalculations[current.x][current.y][0];
-
-                    if (sum > newSum) {
-                        this.aStarCalculations[i][j][0] = Math.max(Math.abs(i - current.x), Math.abs(j - current.y)) +
-                                this.aStarCalculations[current.x][current.y][0];
-                        this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
-                    } else if (sum == newSum && heuristics > newHeuristics) {
-                        this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
-                    }
-                }
-            }
-        }
-    }
-
-    private void restartCalculations() {
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                for (int k = 0; k < 2; k++) {
-                    aStarCalculations[i][j][k] = 10000;
-                }
             }
         }
     }
@@ -172,6 +155,55 @@ public class AStar extends Search {
             }
         }
         return new Position(x, y);
+    }
+
+    private void updateCalculations(Position current, Position target) {
+        int sum, heuristics, newSum, newHeuristics;
+        for (int i = current.x - 1; i < current.x + 2; i++) {
+            for (int j = current.y - 1; j < current.y + 2; j++) {
+                if (Position.correct(i, j) && this.noFear(new Position(i, j))) {
+                    if (this.hp.notEnemy(i, j)) {
+                        heuristics = this.aStarCalculations[i][j][1];
+                        sum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1];
+                        newHeuristics = Math.abs(i - target.x) + Math.abs(j - target.y);
+                        newSum = newHeuristics + Math.max(Math.abs(i - current.x), Math.abs(j - current.y)) +
+                                this.aStarCalculations[current.x][current.y][0];
+
+                        if (sum > newSum) {
+                            this.aStarCalculations[i][j][0] = Math.max(Math.abs(i - current.x), Math.abs(j - current.y)) +
+                                    this.aStarCalculations[current.x][current.y][0];
+                            this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
+                        } else if (sum == newSum && heuristics > newHeuristics) {
+                            this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
+                        }
+                    }
+                } else if (Position.correct(i, j)) {
+                    heuristics = this.aStarCalculations[i][j][1];
+                    sum = this.aStarCalculations[i][j][0] + this.aStarCalculations[i][j][1] + 1000;
+                    newHeuristics = Math.abs(i - target.x) + Math.abs(j - target.y);
+                    newSum = newHeuristics + Math.max(Math.abs(i - current.x), Math.abs(j - current.y)) +
+                            this.aStarCalculations[current.x][current.y][0] + 1000;
+
+                    if (sum > newSum) {
+                        this.aStarCalculations[i][j][0] = Math.max(Math.abs(i - current.x), Math.abs(j - current.y)) +
+                                this.aStarCalculations[current.x][current.y][0] + 1000;
+                        this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
+                    } else if (sum == newSum && heuristics > newHeuristics) {
+                        this.aStarCalculations[i][j][1] = Math.abs(i - target.x) + Math.abs(j - target.y);
+                    }
+                }
+            }
+        }
+    }
+
+    private void restartCalculations() {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                for (int k = 0; k < 2; k++) {
+                    aStarCalculations[i][j][k] = 10000;
+                }
+            }
+        }
     }
 
     private Position doStep() {

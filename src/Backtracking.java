@@ -21,7 +21,7 @@ public class Backtracking extends Search {
         stack.push(this.hp.position.copy());
 
         while (!this.hp.endgame) {
-            if (this.step == 2) {
+            if (this.step == 1) {
                 int bp = 123456;
             }
 
@@ -108,9 +108,30 @@ public class Backtracking extends Search {
         this.updateBDFirstSearch();
         Position[] p = {this.hp.position, this.hp.position};
         queue.add(p);
-
         this.generateFear();
-        this.findShortestWay(target, shortestWay, queue);
+        boolean pathReliable = this.findShortestWay(target, shortestWay, queue);
+        if (!pathReliable) {
+            shortestWay = new LinkedList<>();
+            queue = new LinkedList<>();
+
+            this.updateBDFirstSearch();
+            queue.add(p);
+            this.goToDangerousArea(target, shortestWay, queue);
+            Position newPos = shortestWay.get(shortestWay.size() - 2)[0].copy();
+            this.hp.memory[this.hp.position.x][this.hp.position.y] = "x";
+            this.hp.position = newPos;
+            this.path.add(newPos);
+
+            System.out.println("STEP " + (this.step + 1));
+
+            boolean gotItem = this.getItem();
+            if (gotItem) {
+                this.markUsefulRoute(stack);
+            }
+            stack.push(this.hp.position.copy());
+            this.checkAndPrint();
+            return;
+        }
 
         for (int i = shortestWay.size() - 2; i > -1; i--) {
             Position newPos = shortestWay.get(i)[0].copy();
@@ -153,6 +174,35 @@ public class Backtracking extends Search {
                     }
                 }
                 if (this.findShortestWay(target, shortestWay, queue)) {
+                    if (shortestWay.get(shortestWay.size() - 1)[1].equals(positions[0])) {
+                        Position[] p = {positions[0].copy(), positions[1].copy()};
+                        shortestWay.add(p);
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean goToDangerousArea(Position target, LinkedList<Position[]> shortestWay, Queue<Position[]> queue) {
+        if (!queue.isEmpty()) {
+            Position[] positions = queue.poll();
+            if (positions[0].equals(target)) {
+                Position[] p = {positions[0].copy(), positions[1].copy()};
+                shortestWay.add(p);
+                return true;
+            } else {
+                this.BDFirstSearch[positions[0].x][positions[0].y] = 1;
+                for (Position delta: DELTAS) {
+                    Position newPos = positions[0].sum(delta);
+                    if (newPos.correct() && this.BDFirstSearch[newPos.x][newPos.y] == 0 && this.hp.notEnemy(newPos)) {
+                        Position[] p = {newPos.copy(), positions[0].copy()};
+                        queue.add(p);
+                        this.BDFirstSearch[newPos.x][newPos.y] = 1;
+                    }
+                }
+                if (this.goToDangerousArea(target, shortestWay, queue)) {
                     if (shortestWay.get(shortestWay.size() - 1)[1].equals(positions[0])) {
                         Position[] p = {positions[0].copy(), positions[1].copy()};
                         shortestWay.add(p);
