@@ -1,5 +1,3 @@
-import java.util.List;
-
 public class HarryPotter extends Person {
     int scenario;
     String[][] memory;
@@ -27,6 +25,9 @@ public class HarryPotter extends Person {
         this.generateMemory();
     }
 
+    /**
+     * The method resets Harry's parameters.
+     */
     void updateHarry() {
         this.position = new Position(0, 0);
         this.norrisFound = false;
@@ -110,6 +111,10 @@ public class HarryPotter extends Person {
         }
     }
 
+    /**
+     * The method makes Harry to see the whole perception zone of the inspector.
+     * @param i : inspector that was found
+     */
     private void inspectorFound(Inspector i) {
         for (int i1 = i.position.x - i.staticPerception; i1 < i.position.x + 1 + i.staticPerception; i1++) {
             for (int j1 = i.position.y - i.staticPerception; j1 < i.position.y + 1 + i.staticPerception; j1++) {
@@ -129,21 +134,11 @@ public class HarryPotter extends Person {
         this.memory[i.position.x][i.position.y] = i.symbol;
     }
 
-    boolean afraidOfFilch(Position position) {
-        if (!this.filchFound) {
-            List<Position> deltas = List.of(new Position(-1, 0), new Position(0, -1),
-                    new Position(1, 0), new Position(0, 1));
-            Position maybeFilch;
-            for (Position delta : deltas) {
-                maybeFilch = position.sum(delta);
-                if (maybeFilch.correct() && this.memory[maybeFilch.x][maybeFilch.y].compareTo("f") == 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
+    /**
+     * Logic of the method:
+     * if Harry knows an upper-left cell & lower-right cell of enemy's perception, then he knows that the rectangle
+     * between this cells is filled with enemies' perception.
+     */
     void findInspectorCells() {
         int xMinF = 10000, xMaxF = -10000, yMinF = 10000, yMaxF = -10000;
         int xMinN = 10000, xMaxN = -10000, yMinN = 10000, yMaxN = -10000;
@@ -244,44 +239,10 @@ public class HarryPotter extends Person {
         this.memory[this.position.x][this.position.y] = "H";
     }
 
-    boolean seeItem(Position p) {
-        if (this.scenario == 1) {
-            for (int i = this.position.x - 1; i < this.position.x + 2; i++) {
-                for (int j = this.position.y - 1; j < this.position.y + 2; j++) {
-                    if (Position.correct(i, j) && p.equals(i, j)) {
-                        return true;
-                    }
-                }
-            }
-        } else if (this.scenario == 2) {
-            int i, j;
-            for (i = this.position.x - 1; i < this.position.x + 2; i++) {
-                j = this.position.y - 2;
-                if (Position.correct(i, j) && p.equals(i, j)) {
-                    return true;
-                }
-
-                j = this.position.y + 2;
-                if (Position.correct(i, j) && p.equals(i, j)) {
-                    return true;
-                }
-            }
-
-            for (j = this.position.y - 1; j < this.position.y + 2; j++) {
-                i = this.position.x - 2;
-                if (Position.correct(i, j) && p.equals(i, j)) {
-                    return true;
-                }
-
-                i = this.position.x + 2;
-                if (Position.correct(i, j) && p.equals(i, j)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
+    /**
+     * @param position : position to check
+     * @return if an enemy is on this position
+     */
     boolean notEnemy(Position position) {
         return this.memory[position.x][position.y].compareTo("F") != 0 &&
                 this.memory[position.x][position.y].compareTo("N") != 0 &&
@@ -289,11 +250,21 @@ public class HarryPotter extends Person {
                 this.memory[position.x][position.y].compareTo("n") != 0;
     }
 
+    /**
+     * @param x : position.x
+     * @param y : position.y
+     * @return if an enemy is on this position
+     */
     boolean notEnemy(int x, int y) {
         return this.memory[x][y].compareTo("F") != 0 && this.memory[x][y].compareTo("N") != 0 &&
                 this.memory[x][y].compareTo("f") != 0 && this.memory[x][y].compareTo("n") != 0;
     }
 
+    /**
+     * The method checks if an enemy is on this position. If so, makes Harry see it.
+     * @param i : position.x
+     * @param j : position.y
+     */
     private void memorizeEnemy(int i, int j) {
         if (!this.field.notEnemy(i, j) && this.memory[i][j].compareTo("b") != 0) {
             this.memory[i][j] = this.field.scheme[i][j];
